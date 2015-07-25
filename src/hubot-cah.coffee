@@ -57,14 +57,7 @@ random_white_card = () ->
   cardIndex = Math.floor(Math.random()*whiteCards.length)
   return whiteCards[cardIndex]
 
-db = {
-  scores:         {},                   # {<name>: <score>, ...}
-  activePlayers:  [],                   # [<player name>, ...]
-  blackCard:      random_black_card(),  # <card text>
-  czar:           null,                 # <player name>
-  hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
-  answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
-}
+db = {}
 
 # prune inactive player hands, ensure everyone has five cards
 fix_hands = () ->
@@ -199,26 +192,36 @@ sender = (msg) ->
 
 module.exports = (robot) ->
 
+  db = robot.brain.get 'cah' || {
+    scores:         {},                   # {<name>: <score>, ...}
+    activePlayers:  [],                   # [<player name>, ...]
+    blackCard:      random_black_card(),  # <card text>
+    czar:           null,                 # <player name>
+    hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
+    answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
+  }
+  robot.brain.set 'cah', db
+
   robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
 
-  robot.hear /cah join$/i, (msg) ->
+  robot.hear /^cah join$/i, (msg) ->
     name = sender(msg)
     add_player(name)
     msg.reply "You are now an active CAH player."
 
-  robot.hear /cah leave$/i, (msg) ->
+  robot.hear /^cah leave$/i, (msg) ->
     name = sender(msg)
     remove_player(name)
     msg.reply "You are no longer a CAH player. Your score will be preserved should you decide to play again."
 
-  robot.hear /cah czar$/i, (msg) ->
+  robot.hear /^cah czar$/i, (msg) ->
     if db.czar?
       msg.send db.czar
     else
       msg.send "No Card Czar yet, waiting for players."
 
-  robot.hear /cah players$/i, (msg) ->
+  robot.hear /^cah players$/i, (msg) ->
     if db.activePlayers.length < 1
       msg.send "Waiting for players."
     else
@@ -227,7 +230,7 @@ module.exports = (robot) ->
         responseString += ", #{db.activePlayers[i]}"
       msg.send responseString
 
-  robot.hear /cah leaders$/i, (msg) ->
+  robot.hear /^cah leaders$/i, (msg) ->
     scoreTuples = []
     for name,score of db.scores
       scoreTuples.push([name,score])
@@ -243,14 +246,14 @@ module.exports = (robot) ->
       responseString += "\n#{scoreTuples[i][1]} #{scoreTuples[i][0]}"
     msg.send responseString
 
-  robot.hear /cah score$/i, (msg) ->
+  robot.hear /^cah score$/i, (msg) ->
     score = db.scores[sender(msg)]
     if score?
       msg.reply score
     else
       msg.reply "No CAH score on record."
 
-  robot.hear /cah (hand|cards)$/i, (msg) ->
+  robot.hear /^cah (hand|cards)$/i, (msg) ->
     cards = db.hands[sender(msg)]
     responseString = "Your white CAH cards:"
     if cards?
@@ -259,7 +262,7 @@ module.exports = (robot) ->
     responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(msg), responseString
 
-  robot.hear /cah (submit|play)(?: ([0-4]+))+$/i, (msg) ->
+  robot.hear /^cah (submit|play)(?: ([0-4]+))+$/i, (msg) ->
     if sender(msg) == db.czar
       msg.reply "You are currently the Card Czar!"
       return
@@ -287,7 +290,7 @@ module.exports = (robot) ->
       submit_answer(sender(msg), nums)
       msg.reply "Submission accepted."
 
-  robot.hear /cah answers$/i, (msg) ->
+  robot.hear /^cah answers$/i, (msg) ->
     if sender(msg) != db.czar
       msg.reply "Only the Card Czar may see the white card submissions."
     else
@@ -296,9 +299,9 @@ module.exports = (robot) ->
       for i in [0...answers.length] by 1
         cards = answers[i][1]
         responseString += "\n#{i}: #{generate_phrase(db.blackCard, cards)}"
-      msg.reply responseString
+      robot.messageRoom sender(msg), responseString
 
-  robot.hear /cah (choose|pick) ([0-9]+)$/i, (msg) ->
+  robot.hear /^cah (choose|pick) ([0-9]+)$/i, (msg) ->
     if sender(msg) != db.czar
       msg.reply "Only the Card Czar may choose a winner."
     else if db.answers.length == 0
@@ -310,8 +313,8 @@ module.exports = (robot) ->
       else
         msg.send czar_choose_winner num
 
-  robot.hear /cah (status|question)$/i, (msg) ->
+  robot.hear /^cah (status|question)$/i, (msg) ->
     msg.send game_state_string()
 
-  robot.hear /cah skip$/i, (msg) ->
+  robot.hear /^cah skip$/i, (msg) ->
     msg.send czar_choose_winner -1
