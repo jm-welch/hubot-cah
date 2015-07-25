@@ -258,6 +258,7 @@ module.exports = (robot) ->
     if cards?
       for i in [0...cards.length] by 1
         responseString += "\n#{i}: #{cards[i]}"
+    responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(msg), responseString
 
   robot.hear /cah (submit|play)(?: ([0-4]+))+$/i, (msg) ->
