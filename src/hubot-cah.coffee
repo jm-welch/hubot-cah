@@ -154,10 +154,8 @@ submit_answer = (playerName, handIndices) ->
 czar_choose_winner = (answerIndex) ->
   responseString = "Next round:"
   if 0 <= answerIndex and answerIndex < db.answers.length
-    responseString = "*#{db.blackCard}*"
     for answer in db.answers
-      responseString += "\n#{answer[1][0]}"
-      responseString += ", #{answer[1][i]}" for i in [1...answer[1].length]
+      responseString += "\n#{answer[0]}: #{generate_phrase(db.blackCard, answer[1])}"
 
     winner = db.answers[answerIndex][0]
     cards = db.answers[answerIndex][1]
@@ -170,9 +168,9 @@ czar_choose_winner = (answerIndex) ->
     else
       db.scores[winner] = db.scores[winner] + 1
 
-  db["answers"] = []
+  db.answers = []
   fix_hands()
-  db["blackCard"] = random_black_card()
+  db.blackCard = random_black_card()
   if db.activePlayers.length == 0
     db.czar = null
   else if !db.czar?
