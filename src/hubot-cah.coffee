@@ -67,7 +67,7 @@ fix_hands = () ->
       while cardArray.length < 5
         cardArray.push random_white_card()
       newHands[name] = cardArray
-  db["hands"] = newHands
+  db.hands = newHands
 
 # add player to active list
 # fix their hand so it contains five cards
@@ -192,14 +192,16 @@ sender = (msg) ->
 
 module.exports = (robot) ->
 
-  db = robot.brain.get 'cah' || {
-    scores:         {},                   # {<name>: <score>, ...}
-    activePlayers:  [],                   # [<player name>, ...]
-    blackCard:      random_black_card(),  # <card text>
-    czar:           null,                 # <player name>
-    hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
-    answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
-  }
+  db = robot.brain.get 'cah'
+  if (!db)
+    db = {
+      scores:         {},                   # {<name>: <score>, ...}
+      activePlayers:  [],                   # [<player name>, ...]
+      blackCard:      random_black_card(),  # <card text>
+      czar:           null,                 # <player name>
+      hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
+      answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
+    }
   robot.brain.set 'cah', db
 
   robot.hear /^cah help$/i, (msg) ->
