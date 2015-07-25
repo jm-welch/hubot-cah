@@ -8,8 +8,6 @@
 #
 # Commands:
 #   hubot cah help - List cah commands
-#   hubot cah black - Display a random black card
-#   hubot cah white - Display a random white card
 #   hubot cah play - Add yourself to the game
 #   hubot cah retire - Remove yourself as an active player
 #   hubot cah czar - Display name of the current Card Czar
@@ -29,16 +27,14 @@
 
 helpSummary = "_hubot-cah commands:_"
 helpSummary += "\ncah help - List cah commands"
-helpSummary += "\ncah black - Display a random black card"
-helpSummary += "\ncah white - Display a random white card"
-helpSummary += "\ncah play - Add yourself to the game"
-helpSummary += "\ncah retire - Remove yourself as an active player"
+helpSummary += "\ncah join - Add yourself to the game"
+helpSummary += "\ncah leave - Remove yourself as an active player"
 helpSummary += "\ncah czar - Display name of the current Card Czar"
 helpSummary += "\ncah players - List active players"
 helpSummary += "\ncah leaders - Top five score leaders"
 helpSummary += "\ncah score - Display your score"
 helpSummary += "\ncah hand - List cards in your hand"
-helpSummary += "\ncah submit <#> <#> ... - Indicate white cards to be submitted as an answer, where # indicates card index in hand and amount of white cards submitted corresponds to the amount required by the current black card"
+helpSummary += "\ncah play <#> <#> ... - Indicate white cards to be submitted as an answer, where # indicates card index in hand and amount of white cards submitted corresponds to the amount required by the current black card"
 helpSummary += "\ncah answers - List the current white card submissions for the current black card (Card Czar only)"
 helpSummary += "\ncah choose <#> - Choose a winning answer (Card Czar only)"
 helpSummary += "\ncah status - Display summary of current game"
@@ -208,18 +204,12 @@ module.exports = (robot) ->
   robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
 
-  robot.hear /cah black$/i, (msg) ->
-    msg.send random_black_card()
-
-  robot.hear /cah white$/i, (msg) ->
-    msg.send random_white_card()
-
-  robot.respond /cah play$/i, (msg) ->
+  robot.respond /cah join$/i, (msg) ->
     name = sender(msg)
     add_player(name)
     msg.reply "You are now an active CAH player."
 
-  robot.respond /cah retire$/i, (msg) ->
+  robot.respond /cah leave$/i, (msg) ->
     name = sender(msg)
     remove_player(name)
     msg.reply "You are no longer a CAH player. Your score will be preserved should you decide to play again."
@@ -262,15 +252,15 @@ module.exports = (robot) ->
     else
       msg.reply "No CAH score on record."
 
-  robot.respond /cah hand$/i, (msg) ->
+  robot.respond /cah (hand|cards)$/i, (msg) ->
     cards = db.hands[sender(msg)]
     responseString = "Your white CAH cards:"
     if cards?
       for i in [0...cards.length] by 1
         responseString += "\n#{i}: #{cards[i]}"
-    msg.reply responseString
+    robot.messageRoom sender(msg), responseString
 
-  robot.respond /cah submit(?: ([0-4]+))+$/i, (msg) ->
+  robot.respond /cah (submit|play)(?: ([0-4]+))+$/i, (msg) ->
     if sender(msg) == db.czar
       msg.reply "You are currently the Card Czar!"
       return
@@ -309,7 +299,7 @@ module.exports = (robot) ->
         responseString += "\n#{i}: #{generate_phrase(db.blackCard, cards)}"
       msg.reply responseString
 
-  robot.respond /cah choose ([0-9]+)$/i, (msg) ->
+  robot.respond /cah (choose|pick) ([0-9]+)$/i, (msg) ->
     if sender(msg) != db.czar
       msg.reply "Only the Card Czar may choose a winner."
     else if db.answers.length == 0
@@ -321,7 +311,7 @@ module.exports = (robot) ->
       else
         msg.send czar_choose_winner num
 
-  robot.respond /cah status$/i, (msg) ->
+  robot.respond /cah (status|question)$/i, (msg) ->
     msg.send game_state_string()
 
   robot.respond /cah skip$/i, (msg) ->
