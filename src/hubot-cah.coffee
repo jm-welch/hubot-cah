@@ -203,8 +203,12 @@ module.exports = (robot) ->
     if !robot.brain.data.cah
       robot.brain.data.cah = db
     db = robot.brain.data.cah
+  
+  robot.hearspond = () ->
+    this.hear.apply(this, arguments)
+    this.respond.apply(this, arguments)
 
-  robot.hear /^cah help$/i, (msg) ->
+  robot.hearspond /cah help$/i, (msg) ->
     msg.send helpSummary
 
   robot.hear /^cah join$/i, (msg) ->
@@ -217,13 +221,13 @@ module.exports = (robot) ->
     remove_player(name)
     msg.reply "You are no longer a CAH player. Your score will be preserved should you decide to play again."
 
-  robot.hear /^cah czar$/i, (msg) ->
+  robot.hearspond /cah czar$/i, (msg) ->
     if db.czar?
       msg.send db.czar
     else
       msg.send "No Card Czar yet, waiting for players."
 
-  robot.hear /^cah players$/i, (msg) ->
+  robot.hearspond /cah players$/i, (msg) ->
     if db.activePlayers.length < 1
       msg.send "Waiting for players."
     else
@@ -232,7 +236,7 @@ module.exports = (robot) ->
         responseString += ", #{db.activePlayers[i]}"
       msg.send responseString
 
-  robot.hear /^cah leaders$/i, (msg) ->
+  robot.hearspond /cah leaders$/i, (msg) ->
     scoreTuples = []
     for name,score of db.scores
       scoreTuples.push([name,score])
@@ -248,14 +252,14 @@ module.exports = (robot) ->
       responseString += "\n#{scoreTuples[i][1]} #{scoreTuples[i][0]}"
     msg.send responseString
 
-  robot.hear /^cah score$/i, (msg) ->
+  robot.hearspond /cah score$/i, (msg) ->
     score = db.scores[sender(msg)]
     if score?
       msg.reply score
     else
       msg.reply "No CAH score on record."
 
-  robot.hear /^cah (hand|cards)$/i, (msg) ->
+  robot.hearspond /cah (hand|cards)$/i, (msg) ->
     cards = db.hands[sender(msg)]
     responseString = "Your white CAH cards:"
     if cards?
@@ -264,7 +268,7 @@ module.exports = (robot) ->
     responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(msg), responseString
 
-  robot.hear /^cah (submit|play)( [1-5])+$/i, (msg) ->
+  robot.hearspond /cah (submit|play)( [1-5])+$/i, (msg) ->
     if sender(msg) == db.czar
       msg.reply "You are currently the Card Czar!"
       return
@@ -292,7 +296,7 @@ module.exports = (robot) ->
       submit_answer(sender(msg), nums)
       msg.reply "Submission accepted."
 
-  robot.hear /^cah answers$/i, (msg) ->
+  robot.hearspond /cah answers$/i, (msg) ->
     if sender(msg) != db.czar
       msg.reply "Only the Card Czar may see the white card submissions."
     else
@@ -315,7 +319,7 @@ module.exports = (robot) ->
       else
         msg.send czar_choose_winner num
 
-  robot.hear /^cah (status|question)$/i, (msg) ->
+  robot.hearspond /cah (status|question)$/i, (msg) ->
     msg.send game_state_string()
 
   robot.hear /^cah skip$/i, (msg) ->
