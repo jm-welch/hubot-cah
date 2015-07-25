@@ -7,19 +7,19 @@
 #   None
 #
 # Commands:
-#   hubot cah help - List cah commands
-#   hubot cah play - Add yourself to the game
-#   hubot cah retire - Remove yourself as an active player
-#   hubot cah czar - Display name of the current Card Czar
-#   hubot cah players - List active players
-#   hubot cah leaders - Top five score leaders
-#   hubot cah score - Display your score
-#   hubot cah hand - List cards in your hand
-#   hubot cah submit <#> <#> ... - Indicate white cards to be submitted as an answer, where # indicates card index in hand and amount of white cards submitted corresponds to the amount required by the current black card
-#   hubot cah answers - List the current white card submissions for the current black card (Card Czar only)
-#   hubot cah choose <#> - Choose a winning answer (Card Czar only)
-#   hubot cah status - Display summary of current game
-#   hubot cah skip - Discard current black card and assign a new Card Czar
+#   cah help - List cah commands
+#   cah play - Add yourself to the game
+#   cah retire - Remove yourself as an active player
+#   cah czar - Display name of the current Card Czar
+#   cah players - List active players
+#   cah leaders - Top five score leaders
+#   cah score - Display your score
+#   cah hand - List cards in your hand
+#   cah submit <#> <#> ... - Indicate white cards to be submitted as an answer, where # indicates card index in hand and amount of white cards submitted corresponds to the amount required by the current black card
+#   cah answers - List the current white card submissions for the current black card (Card Czar only)
+#   cah choose <#> - Choose a winning answer (Card Czar only)
+#   cah status - Display summary of current game
+#   cah skip - Discard current black card and assign a new Card Czar
 #
 # Author:
 #   Cory Metcalfe (corymetcalfe@gmail.com)
