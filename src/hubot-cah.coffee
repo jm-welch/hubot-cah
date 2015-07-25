@@ -192,17 +192,21 @@ sender = (msg) ->
 
 module.exports = (robot) ->
 
-  db = robot.brain.get 'cah'
-  if (!db)
-    db = {
-      scores:         {},                   # {<name>: <score>, ...}
-      activePlayers:  [],                   # [<player name>, ...]
-      blackCard:      random_black_card(),  # <card text>
-      czar:           null,                 # <player name>
-      hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
-      answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
-    }
-  robot.brain.set 'cah', db
+  brainLoaded = () ->
+    db = robot.brain.get 'cah'
+    if (!db)
+      db = {
+        scores:         {},                   # {<name>: <score>, ...}
+        activePlayers:  [],                   # [<player name>, ...]
+        blackCard:      random_black_card(),  # <card text>
+        czar:           null,                 # <player name>
+        hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
+        answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
+      }
+    robot.brain.set 'cah', db
+  
+  robot.brain.on 'loaded', brainLoaded
+  brainLoaded() # just in case
 
   robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
@@ -290,6 +294,7 @@ module.exports = (robot) ->
             msg.reply "You cannot submit a single card more than once."
             return
       submit_answer(sender(msg), nums)
+      robot.brain.save()
       msg.reply "Submission accepted."
 
   robot.hear /^cah answers$/i, (msg) ->
@@ -314,9 +319,11 @@ module.exports = (robot) ->
         msg.reply "That is not an valid choice, try again."
       else
         msg.send czar_choose_winner num
+        robot.brain.save()
 
   robot.hear /^cah (status|question)$/i, (msg) ->
     msg.send game_state_string()
 
   robot.hear /^cah skip$/i, (msg) ->
     msg.send czar_choose_winner -1
+    robot.brain.save()
