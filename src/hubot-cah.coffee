@@ -208,10 +208,10 @@ module.exports = (robot) ->
   robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
 
-  robot.respond /cah black$/i, (msg) ->
+  robot.hear /cah black$/i, (msg) ->
     msg.send random_black_card()
 
-  robot.respond /cah white$/i, (msg) ->
+  robot.hear /cah white$/i, (msg) ->
     msg.send random_white_card()
 
   robot.respond /cah play$/i, (msg) ->
