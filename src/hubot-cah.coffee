@@ -294,7 +294,6 @@ module.exports = (robot) ->
             msg.reply "You cannot submit a single card more than once."
             return
       submit_answer(sender(msg), nums)
-      robot.brain.save()
       msg.reply "Submission accepted."
 
   robot.hear /^cah answers$/i, (msg) ->
@@ -319,11 +318,9 @@ module.exports = (robot) ->
         msg.reply "That is not an valid choice, try again."
       else
         msg.send czar_choose_winner num
-        robot.brain.save()
 
   robot.hear /^cah (status|question)$/i, (msg) ->
     msg.send game_state_string()
 
   robot.hear /^cah skip$/i, (msg) ->
     msg.send czar_choose_winner -1
-    robot.brain.save()
