@@ -205,7 +205,7 @@ sender = (msg) ->
 
 module.exports = (robot) ->
 
-  robot.respond /cah help$/i, (msg) ->
+  robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
 
   robot.respond /cah black$/i, (msg) ->
