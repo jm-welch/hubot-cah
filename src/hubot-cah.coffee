@@ -145,7 +145,7 @@ submit_answer = (playerName, handIndices) ->
 # @param answerIndex: if value outside db.answers array range, no winner this round
 # @return string for public display
 czar_choose_winner = (answerIndex) ->
-  responseString = "Next round:"
+  responseString = "Current round:"
   if 0 <= answerIndex and answerIndex < db.answers.length
     for answer in db.answers
       responseString += "\n#{answer[0]}: #{generate_phrase(db.blackCard, answer[1])}"
@@ -192,21 +192,21 @@ sender = (msg) ->
 
 module.exports = (robot) ->
 
-#  brainLoaded = () ->
-#    db = robot.brain.get 'cah'
-#    if (!db)
-  db = {
-    scores:         {},                   # {<name>: <score>, ...}
-    activePlayers:  [],                   # [<player name>, ...]
-    blackCard:      random_black_card(),  # <card text>
-    czar:           null,                 # <player name>
-    hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
-    answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
-  }
-#    robot.brain.set 'cah', db
+  brainLoaded = () ->
+    db = robot.brain.get "cah"
+    if (!db)
+      db = {
+        scores:         {},                   # {<name>: <score>, ...}
+        activePlayers:  [],                   # [<player name>, ...]
+        blackCard:      random_black_card(),  # <card text>
+        czar:           null,                 # <player name>
+        hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
+        answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
+      }
+    robot.brain.set "cah", db
   
-#  robot.brain.on 'loaded', brainLoaded
-#  brainLoaded() # just in case
+  robot.brain.on "loaded", brainLoaded
+  brainLoaded() # just in case
 
   robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
