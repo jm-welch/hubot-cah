@@ -57,7 +57,14 @@ random_white_card = () ->
   cardIndex = Math.floor(Math.random()*whiteCards.length)
   return whiteCards[cardIndex]
 
-db = {}
+db = {
+  scores:         {},                   # {<name>: <score>, ...}
+  activePlayers:  [],                   # [<player name>, ...]
+  blackCard:      random_black_card(),  # <card text>
+  czar:           null,                 # <player name>
+  hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
+  answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
+}
 
 # prune inactive player hands, ensure everyone has five cards
 fix_hands = () ->
@@ -192,21 +199,10 @@ sender = (msg) ->
 
 module.exports = (robot) ->
 
-  brainLoaded = () ->
-    db = robot.brain.get "cah"
-    if (!db)
-      db = {
-        scores:         {},                   # {<name>: <score>, ...}
-        activePlayers:  [],                   # [<player name>, ...]
-        blackCard:      random_black_card(),  # <card text>
-        czar:           null,                 # <player name>
-        hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
-        answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
-      }
-    robot.brain.set "cah", db
-  
-  robot.brain.on "loaded", brainLoaded
-  brainLoaded() # just in case
+  robot.brain.on "loaded", =>
+    if !robot.brain.data.cah
+      robot.brain.data.cah = db
+    db = robot.brain.data.cah
 
   robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
