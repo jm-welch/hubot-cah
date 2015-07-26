@@ -260,7 +260,7 @@ module.exports = (robot) ->
     responseString = "Your white CAH cards:"
     if cards?
       for i in [0...cards.length] by 1
-        responseString += "\n#{i}: #{cards[i]}"
+        responseString += "\n#{i+1}: #{cards[i]}"
     responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(msg), responseString
 
@@ -300,7 +300,7 @@ module.exports = (robot) ->
       responseString = "White card submissions thus far:"
       for i in [0...answers.length] by 1
         cards = answers[i][1]
-        responseString += "\n#{i}: #{generate_phrase(db.blackCard, cards)}"
+        responseString += "\n#{i+1}: #{generate_phrase(db.blackCard, cards)}"
       robot.messageRoom sender(msg), responseString
 
   robot.hear /^cah (choose|pick) (\d+)$/i, (msg) ->
