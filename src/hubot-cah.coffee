@@ -268,14 +268,14 @@ module.exports = (robot) ->
     responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(msg), responseString
 
-  robot.hear /^cah (submit|play)(?: ([0-4]+))+$/i, (msg) ->
+  robot.hear /^cah (submit|play)( [1-5])+$/i, (msg) ->
     if sender(msg) == db.czar
       msg.reply "You are currently the Card Czar!"
       return
     if db.hands[sender(msg)].length < 5
       msg.reply "You have already submitted cards for this round."
       return
-    numString = msg.match[0].split("submit ")[1]
+    numString = msg.match[0].split(/(submit|play)/)[1]
     nums = numString.split(" ")
     expectedCount = db.blackCard.split(blackBlank).length - 1
     if expectedCount == 0
@@ -284,7 +284,7 @@ module.exports = (robot) ->
       msg.reply "You submitted #{nums.length} cards, #{expectedCount} expected."
     else
       for i in [0...nums.length] by 1
-        nums[i] = parseInt(nums[i])
+        nums[i] = parseInt(nums[i]) - 1
         if nums[i] >= db.hands[sender(msg)].length
           msg.reply "#{nums[i]} is not a valid card number."
           return
@@ -307,13 +307,13 @@ module.exports = (robot) ->
         responseString += "\n#{i}: #{generate_phrase(db.blackCard, cards)}"
       robot.messageRoom sender(msg), responseString
 
-  robot.hear /^cah (choose|pick) ([0-9]+)$/i, (msg) ->
+  robot.hear /^cah (choose|pick) (\d+)$/i, (msg) ->
     if sender(msg) != db.czar
       msg.reply "Only the Card Czar may choose a winner."
     else if db.answers.length == 0
       msg.reply "No submissions to choose from yet."
     else
-      num = parseInt(msg.match[1])
+      num = parseInt(msg.match[1]) - 1
       if num < 0 or num >= db.answers.length
         msg.reply "That is not an valid choice, try again."
       else
