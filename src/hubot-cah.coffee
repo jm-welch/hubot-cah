@@ -57,7 +57,14 @@ random_white_card = () ->
   cardIndex = Math.floor(Math.random()*whiteCards.length)
   return whiteCards[cardIndex]
 
-db = {}
+db = {
+  scores:         {},                   # {<name>: <score>, ...}
+  activePlayers:  [],                   # [<player name>, ...]
+  blackCard:      random_black_card(),  # <card text>
+  czar:           null,                 # <player name>
+  hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
+  answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
+}
 
 # prune inactive player hands, ensure everyone has five cards
 fix_hands = () ->
@@ -145,7 +152,7 @@ submit_answer = (playerName, handIndices) ->
 # @param answerIndex: if value outside db.answers array range, no winner this round
 # @return string for public display
 czar_choose_winner = (answerIndex) ->
-  responseString = "Next round:"
+  responseString = "Current round:"
   if 0 <= answerIndex and answerIndex < db.answers.length
     for answer in db.answers
       responseString += "\n#{answer[0]}: #{generate_phrase(db.blackCard, answer[1])}"
@@ -192,21 +199,10 @@ sender = (msg) ->
 
 module.exports = (robot) ->
 
-#  brainLoaded = () ->
-#    db = robot.brain.get 'cah'
-#    if (!db)
-  db = {
-    scores:         {},                   # {<name>: <score>, ...}
-    activePlayers:  [],                   # [<player name>, ...]
-    blackCard:      random_black_card(),  # <card text>
-    czar:           null,                 # <player name>
-    hands:          {},                   # {<name>: [<card text>, <card text>, ...], ...}
-    answers:        [],                   # [ [<player name>, [<card text>, ...]], ... ]
-  }
-#    robot.brain.set 'cah', db
-  
-#  robot.brain.on 'loaded', brainLoaded
-#  brainLoaded() # just in case
+  robot.brain.on "loaded", =>
+    if !robot.brain.data.cah
+      robot.brain.data.cah = db
+    db = robot.brain.data.cah
 
   robot.hear /^cah help$/i, (msg) ->
     msg.send helpSummary
@@ -264,18 +260,18 @@ module.exports = (robot) ->
     responseString = "Your white CAH cards:"
     if cards?
       for i in [0...cards.length] by 1
-        responseString += "\n#{i}: #{cards[i]}"
+        responseString += "\n#{i+1}: #{cards[i]}"
     responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(msg), responseString
 
-  robot.hear /^cah (submit|play)(?: ([0-4]+))+$/i, (msg) ->
+  robot.hear /^cah (submit|play)( [1-5])+$/i, (msg) ->
     if sender(msg) == db.czar
       msg.reply "You are currently the Card Czar!"
       return
     if db.hands[sender(msg)].length < 5
       msg.reply "You have already submitted cards for this round."
       return
-    numString = msg.match[0].split("submit ")[1]
+    numString = msg.match[0].split(/(submit|play)/)[1]
     nums = numString.split(" ")
     expectedCount = db.blackCard.split(blackBlank).length - 1
     if expectedCount == 0
@@ -284,7 +280,7 @@ module.exports = (robot) ->
       msg.reply "You submitted #{nums.length} cards, #{expectedCount} expected."
     else
       for i in [0...nums.length] by 1
-        nums[i] = parseInt(nums[i])
+        nums[i] = parseInt(nums[i]) - 1
         if nums[i] >= db.hands[sender(msg)].length
           msg.reply "#{nums[i]} is not a valid card number."
           return
@@ -304,16 +300,16 @@ module.exports = (robot) ->
       responseString = "White card submissions thus far:"
       for i in [0...answers.length] by 1
         cards = answers[i][1]
-        responseString += "\n#{i}: #{generate_phrase(db.blackCard, cards)}"
+        responseString += "\n#{i+1}: #{generate_phrase(db.blackCard, cards)}"
       robot.messageRoom sender(msg), responseString
 
-  robot.hear /^cah (choose|pick) ([0-9]+)$/i, (msg) ->
+  robot.hear /^cah (choose|pick) (\d+)$/i, (msg) ->
     if sender(msg) != db.czar
       msg.reply "Only the Card Czar may choose a winner."
     else if db.answers.length == 0
       msg.reply "No submissions to choose from yet."
     else
-      num = parseInt(msg.match[1])
+      num = parseInt(msg.match[1]) - 1
       if num < 0 or num >= db.answers.length
         msg.reply "That is not an valid choice, try again."
       else
