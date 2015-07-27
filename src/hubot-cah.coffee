@@ -199,11 +199,13 @@ sender = (res) ->
 
 module.exports = (robot) ->
   robot.error (err, res) ->
-    robot.logger.error robot.brain.data.cah
-
     if res?
-      res.reply "Someone broke me again: #{err.message}"
-      
+      res.reply "Someone broke me again: #{err.message}\n#{err.stack}\n#{robot.brain.data.cah}"
+    else
+      robot.logger.error err.message
+      robot.logger.error err.stack
+      robot.logger.error robot.brain.data.cah
+
   robot.brain.on "loaded", =>
     if !robot.brain.data.cah
       robot.brain.data.cah = db
