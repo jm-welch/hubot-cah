@@ -204,9 +204,12 @@ module.exports = (robot) ->
       robot.brain.data.cah = db
     db = robot.brain.data.cah
   
-  robot.hearspond = () ->
-    this.hear.apply(this, arguments)
-    this.respond.apply(this, arguments)
+  robot.hearspond = (regex, cb) ->
+    # Add back ^ to regex for hear, not for respond
+    alt = new RegExp('^' + regex.source, 'i')
+    args = Array.prototype.slice(arguments, 1)
+    this.hear.call(this, alt, cb)
+    this.respond.call(this, regex, cb)
 
   robot.hearspond /cah help$/i, (msg) ->
     msg.send helpSummary
