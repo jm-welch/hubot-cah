@@ -191,13 +191,20 @@ game_state_string = () ->
   else
     return "*#{db.blackCard}* [#{db.czar}, #{db.answers.length}/#{db.activePlayers.length-1}]"
 
-# @param msg: message object
+# @param res: message object
 # @return name of message sender
-sender = (msg) ->
-  return msg.message.user.name
+sender = (res) ->
+  return res.message.user.name
 
 
 module.exports = (robot) ->
+  robot.error (err, res) ->
+    if res?
+      res.reply "Someone broke me again: #{err.message}\n#{err.stack}\n#{robot.brain.data.cah}"
+    else
+      robot.logger.error err.message
+      robot.logger.error err.stack
+      robot.logger.error robot.brain.data.cah
 
   robot.brain.on "loaded", =>
     if !robot.brain.data.cah
@@ -211,35 +218,35 @@ module.exports = (robot) ->
     this.hear.call(this, alt, cb)
     this.respond.call(this, regex, cb)
 
-  robot.hearspond /cah help$/i, (msg) ->
-    msg.send helpSummary
+  robot.hearspond /cah help$/i, (res) ->
+    res.send helpSummary
 
-  robot.hear /^cah join$/i, (msg) ->
-    name = sender(msg)
+  robot.hear /^cah join$/i, (res) ->
+    name = sender(res)
     add_player(name)
-    msg.reply "You are now an active CAH player."
+    res.reply "You are now an active CAH player."
 
-  robot.hear /^cah leave$/i, (msg) ->
-    name = sender(msg)
+  robot.hear /^cah leave$/i, (res) ->
+    name = sender(res)
     remove_player(name)
-    msg.reply "You are no longer a CAH player. Your score will be preserved should you decide to play again."
+    res.reply "You are no longer a CAH player. Your score will be preserved should you decide to play again."
 
-  robot.hearspond /cah czar$/i, (msg) ->
+  robot.hearspond /cah czar$/i, (res) ->
     if db.czar?
-      msg.send db.czar
+      res.send db.czar
     else
-      msg.send "No Card Czar yet, waiting for players."
+      res.send "No Card Czar yet, waiting for players."
 
-  robot.hearspond /cah players$/i, (msg) ->
+  robot.hearspond /cah players$/i, (res) ->
     if db.activePlayers.length < 1
-      msg.send "Waiting for players."
+      res.send "Waiting for players."
     else
       responseString = "CAH Players: #{db.activePlayers[0]}"
       for i in [1...db.activePlayers.length] by 1
         responseString += ", #{db.activePlayers[i]}"
-      msg.send responseString
+      res.send responseString
 
-  robot.hearspond /cah leaders$/i, (msg) ->
+  robot.hearspond /cah leaders$/i, (res) ->
     scoreTuples = []
     for name,score of db.scores
       scoreTuples.push([name,score])
@@ -253,77 +260,77 @@ module.exports = (robot) ->
       if i >= scoreTuples.length
         break
       responseString += "\n#{scoreTuples[i][1]} #{scoreTuples[i][0]}"
-    msg.send responseString
+    res.send responseString
 
-  robot.hearspond /cah score$/i, (msg) ->
-    score = db.scores[sender(msg)]
+  robot.hearspond /cah score$/i, (res) ->
+    score = db.scores[sender(res)]
     if score?
-      msg.reply score
+      res.reply score
     else
-      msg.reply "No CAH score on record."
+      res.reply "No CAH score on record."
 
-  robot.hearspond /cah (hand|cards)$/i, (msg) ->
-    cards = db.hands[sender(msg)]
+  robot.hearspond /cah (hand|cards)$/i, (res) ->
+    cards = db.hands[sender(res)]
     responseString = "Your white CAH cards:"
     if cards?
       for i in [0...cards.length] by 1
         responseString += "\n#{i+1}: #{cards[i]}"
     responseString += "\nCurrent black card: *#{db.blackCard}*"
-    robot.messageRoom sender(msg), responseString
+    robot.messageRoom sender(res), responseString
 
-  robot.hearspond /cah (submit|play)( [1-5])+$/i, (msg) ->
-    if sender(msg) == db.czar
-      msg.reply "You are currently the Card Czar!"
+  robot.hearspond /cah (submit|play)( [1-5])+$/i, (res) ->
+    if sender(res) == db.czar
+      res.reply "You are currently the Card Czar!"
       return
-    if db.hands[sender(msg)].length < 5
-      msg.reply "You have already submitted cards for this round."
+    if db.hands[sender(res)].length < 5
+      res.reply "You have already submitted cards for this round."
       return
-    numString = msg.match[0].split(/(submit|play)/)[1]
+    numString = res.match[0].split(/(submit|play)/)[1]
     nums = numString.split(" ")
     expectedCount = db.blackCard.split(blackBlank).length - 1
     if expectedCount == 0
       expectedCount = 1
     if nums.length != expectedCount
-      msg.reply "You submitted #{nums.length} cards, #{expectedCount} expected."
+      res.reply "You submitted #{nums.length} cards, #{expectedCount} expected."
     else
       for i in [0...nums.length] by 1
         nums[i] = parseInt(nums[i]) - 1
-        if nums[i] >= db.hands[sender(msg)].length
-          msg.reply "#{nums[i]} is not a valid card number."
+        if nums[i] >= db.hands[sender(res)].length
+          res.reply "#{nums[i]} is not a valid card number."
           return
       for i in [0...nums.length] by 1
         for j in [i+1...nums.length] by 1
           if nums[i] == nums[j]
-            msg.reply "You cannot submit a single card more than once."
+            res.reply "You cannot submit a single card more than once."
             return
-      submit_answer(sender(msg), nums)
-      msg.reply "Submission accepted."
+      submit_answer(sender(res), nums)
+      res.reply "Submission accepted."
 
-  robot.hearspond /cah answers$/i, (msg) ->
-    if sender(msg) != db.czar
-      msg.reply "Only the Card Czar may see the white card submissions."
+  robot.hearspond /cah answers$/i, (res) ->
+    if sender(res) != db.czar
+      res.reply "Only the Card Czar may see the white card submissions."
     else
       answers = db.answers
       responseString = "White card submissions thus far:"
       for i in [0...answers.length] by 1
         cards = answers[i][1]
         responseString += "\n#{i+1}: #{generate_phrase(db.blackCard, cards)}"
-      robot.messageRoom sender(msg), responseString
+      robot.messageRoom sender(res), responseString
 
-  robot.hear /^cah (choose|pick) (\d+)$/i, (msg) ->
-    if sender(msg) != db.czar
-      msg.reply "Only the Card Czar may choose a winner."
+  robot.hear /^cah (choose|pick) (\d+)$/i, (res) ->
+    if sender(res) != db.czar
+      res.reply "Only the Card Czar may choose a winner."
     else if db.answers.length == 0
-      msg.reply "No submissions to choose from yet."
+      res.reply "No submissions to choose from yet."
     else
-      num = parseInt(msg.match[1]) - 1
+      num = parseInt(res.match[1]) - 1
       if num < 0 or num >= db.answers.length
-        msg.reply "That is not an valid choice, try again."
+        res.reply "That is not an valid choice, try again."
       else
-        msg.send czar_choose_winner num
+        res.send czar_choose_winner num
 
-  robot.hearspond /cah (status|question)$/i, (msg) ->
-    msg.send game_state_string()
+  robot.hearspond /cah (status|question)$/i, (res) ->
+    res.send game_state_string()
 
-  robot.hear /^cah skip$/i, (msg) ->
-    msg.send czar_choose_winner -1
+  robot.hear /^cah skip$/i, (res) ->
+    res.send czar_choose_winner -1
