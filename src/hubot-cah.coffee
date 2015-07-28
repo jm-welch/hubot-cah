@@ -285,8 +285,9 @@ module.exports = (robot) ->
     if db.hands[sender(res)].length < 5
       res.reply "You have already submitted cards for this round."
       return
-    numString = res.match[0].split(/(submit|play)/)[1]
+    numString = res.match[0].replace(/^[^\d]+/, '')
     nums = numString.split(" ")
+
     expectedCount = db.blackCard.split(blackBlank).length - 1
     if expectedCount == 0
       expectedCount = 1
@@ -294,7 +295,7 @@ module.exports = (robot) ->
       res.reply "You submitted #{nums.length} cards, #{expectedCount} expected."
     else
       for i in [0...nums.length] by 1
-        nums[i] = parseInt(nums[i]) - 1
+        nums[i] = parseInt(nums[i], 10) - 1
         if nums[i] >= db.hands[sender(res)].length
           res.reply "#{nums[i]} is not a valid card number."
           return
