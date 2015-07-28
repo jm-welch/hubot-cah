@@ -205,7 +205,7 @@ module.exports = (robot) ->
       res.reply "Someone broke me again: #{err.message}"
     robot.logger.error err.message
     robot.logger.error err.stack
-    robot.logger.error JSON.stringify(robot.brain.data.cah, null, '\t'))
+    robot.logger.error JSON.stringify(robot.brain.data.cah, null, '\t')
 
   robot.brain.on "loaded", =>
     if !robot.brain.data.cah
