@@ -210,9 +210,28 @@ module.exports = (robot) ->
     if !robot.brain.data.cah
       robot.brain.data.cah = db
     db = robot.brain.data.cah
+
+
+  # display submitted answers
+  # by default only works when all active players have submitted,
+  # but can be overridden by passing true for force param
+  show_answers = (res, force) ->
+    answers = db.answers
+    answers_n = answers.length
+    submitters_n = db.activePlayers.length - 1
+    status = "#{answers_n}/#{submitters_n}"
+    if (force || (answers_n >= submitters_n))
+      responseString = "White card submissions so far (#{status}):"
+      for i in [0...answers_n] by 1
+        cards = answers[i][1]
+        responseString += "\n#{i+1}: #{generate_phrase(db.blackCard, cards)}"
+      robot.messageRoom sender(res), responseString
+    else
+      res.reply "NOPE, not everyone has responded yet! (#{status})\n(Czars can use 'cah answers!' to see answers early)"
   
+  # combo hear and respond, prepends ^ to hear regex
+  # good for allowing same commands in room and DM
   robot.hearspond = (regex, cb) ->
-    # Add back ^ to regex for hear, not for respond
     alt = new RegExp('^' + regex.source, 'i')
     args = Array.prototype.slice(arguments, 1)
     this.hear.call(this, alt, cb)
@@ -229,7 +248,18 @@ module.exports = (robot) ->
   robot.hear /^cah leave$/i, (res) ->
     name = sender(res)
     remove_player(name)
-    res.reply "You are no longer a CAH player. Your score will be preserved should you decide to play again."
+    res.send "#{name} is no longer a CAH player. Their score will be preserved should they decide to play again."
+
+  robot.hear /^cah kick( [^\s]+)$/i, (res) ->
+    if (sender(res) != db.czar)
+      res.reply "Whoa easy only the czar can kick"
+      return
+    name = res.match[1].trim()
+    if (db.activePlayers.indexOf(name) == -1)
+      res.reply "#{name} isn't a current player so... this is awkward"
+      return
+    remove_player(name)
+    res.send "#{name} is no longer a CAH player. Their score will be preserved should they decide to play again."
 
   robot.hearspond /cah czar$/i, (res) ->
     if db.czar?
@@ -307,16 +337,16 @@ module.exports = (robot) ->
       submit_answer(sender(res), nums)
       res.reply "Submission accepted."
 
+
   robot.hearspond /cah answers$/i, (res) ->
-    if sender(res) != db.czar
-      res.reply "Only the Card Czar may see the white card submissions."
-    else
-      answers = db.answers
-      responseString = "White card submissions thus far:"
-      for i in [0...answers.length] by 1
-        cards = answers[i][1]
-        responseString += "\n#{i+1}: #{generate_phrase(db.blackCard, cards)}"
-      robot.messageRoom sender(res), responseString
+    show_answers res
+
+  robot.hearspond /cah answers!/i, (res) ->
+    if (sender(res) != db.czar)
+      res.reply "Whoa easy only the czar can force out the answers"
+      return
+    show_answers res, 'force, mother fucker'
+      
 
   robot.hear /^cah (choose|pick) (\d+)$/i, (res) ->
     if sender(res) != db.czar
