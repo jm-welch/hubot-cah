@@ -154,8 +154,8 @@ submit_answer = (playerName, handIndices) ->
 # @param answerIndex: if value outside db.answers array range, no winner this round
 # @return string for public display
 czar_choose_winner = (answerIndex) ->
-  responseString = "Current round:"
   if 0 <= answerIndex and answerIndex < db.answers.length
+    responseString = "Current round:"
     for answer in db.answers
       responseString += "\n#{answer[0]}: #{generate_phrase(db.blackCard, answer[1])}"
 
@@ -202,11 +202,10 @@ sender = (res) ->
 module.exports = (robot) ->
   robot.error (err, res) ->
     if res?
-      res.reply "Someone broke me again: #{err.message}\n#{err.stack}\n#{robot.brain.data.cah}"
-    else
-      robot.logger.error err.message
-      robot.logger.error err.stack
-      robot.logger.error robot.brain.data.cah
+      res.reply "Someone broke me again: #{err.message}"
+    robot.logger.error err.message
+    robot.logger.error err.stack
+    robot.logger.error JSON.stringify(robot.brain.data.cah, null, '\t'))
 
   robot.brain.on "loaded", =>
     if !robot.brain.data.cah
@@ -233,7 +232,7 @@ module.exports = (robot) ->
         res.send responseString
     else
       res.reply "NOPE, not everyone has responded yet! (#{status})\n(Czars can use 'cah answers!' to see answers early)"
-  
+
   # combo hear and respond, prepends ^ to hear regex
   # good for allowing same commands in room and DM
   robot.hearspond = (regex, cb) ->
@@ -348,7 +347,7 @@ module.exports = (robot) ->
       res.reply "Whoa easy only the czar can force out the answers"
       return
     show_answers res, 'force, mother fucker'
-      
+
 
   robot.hear /^cah (choose|pick) (\d+)$/i, (res) ->
     if sender(res) != db.czar
@@ -356,7 +355,7 @@ module.exports = (robot) ->
     else if db.answers.length == 0
       res.reply "No submissions to choose from yet."
     else
-      num = parseInt(res.match[1]) - 1
+      num = parseInt(res.match[2]) - 1
       if num < 0 or num >= db.answers.length
         res.reply "That is not an valid choice, try again."
       else
@@ -367,3 +366,6 @@ module.exports = (robot) ->
 
   robot.hear /^cah skip$/i, (res) ->
     res.send czar_choose_winner -1
+
+  robot.hearspond /cah debug$/i, (res) ->
+    res.send "Here's some json for you\n" + JSON.stringify(robot.brain.data.cah, null, '\t')
