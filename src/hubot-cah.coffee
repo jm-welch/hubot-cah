@@ -29,7 +29,7 @@ helpSummary = "_hubot-cah commands:_"
 helpSummary += "\ncah help - List cah commands"
 helpSummary += "\ncah join - Add yourself to the game"
 helpSummary += "\ncah leave - Remove yourself as an active player"
-helpSummary += "\ncah kick - Remove another active player (czar only)"
+helpSummary += "\ncah kick - Remove another active player"
 helpSummary += "\ncah czar - Display name of the current Card Czar"
 helpSummary += "\ncah players - List active players"
 helpSummary += "\ncah leaders - Top five score leaders"
@@ -227,7 +227,10 @@ module.exports = (robot) ->
       for i in [0...answers_n] by 1
         cards = answers[i][1]
         responseString += "\n#{i+1}: #{generate_phrase(db.blackCard, cards)}"
-      robot.messageRoom sender(res), responseString
+      if (force)
+        robot.messageRoom sender(res), responseString
+      else
+        res.send responseString
     else
       res.reply "NOPE, not everyone has responded yet! (#{status})\n(Czars can use 'cah answers!' to see answers early)"
   
@@ -253,9 +256,6 @@ module.exports = (robot) ->
     res.send "#{name} is no longer a CAH player. Their score will be preserved should they decide to play again."
 
   robot.hear /^cah kick( [^\s]+)$/i, (res) ->
-    if (sender(res) != db.czar)
-      res.reply "Whoa easy only the czar can kick"
-      return
     name = res.match[1].trim()
     if (db.activePlayers.indexOf(name) == -1)
       res.reply "#{name} isn't a current player so... this is awkward"
