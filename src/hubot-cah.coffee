@@ -366,6 +366,3 @@ module.exports = (robot) ->
 
   robot.hear /^cah skip$/i, (res) ->
     res.send czar_choose_winner -1
-
-  robot.hearspond /cah debug$/i, (res) ->
-    res.send "Here's some json for you\n" + JSON.stringify(robot.brain.data.cah, null, '\t')
