@@ -199,7 +199,6 @@ game_state_string = () ->
 sender = (res) ->
   return res.message.user.name
 
-
 module.exports = (robot) ->
   robot.error (err, res) ->
     if res?
@@ -212,7 +211,6 @@ module.exports = (robot) ->
     if !robot.brain.data.cah
       robot.brain.data.cah = db
     db = robot.brain.data.cah
-
 
   # display submitted answers
   # by default only works when all active players have submitted,
