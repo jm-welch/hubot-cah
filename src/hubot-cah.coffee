@@ -37,7 +37,7 @@ helpSummary += "\ncah score - Display your score"
 helpSummary += "\ncah hand - List cards in your hand"
 helpSummary += "\ncah play <#> <#> ... - Indicate white cards to be submitted as an answer, applied to black card blanks in order"
 helpSummary += "\ncah answers - List the submitted white cards once all have been submitted"
-helpSummary += "\ncah answers! - List the submitted white cards anytime (czar only)"
+# helpSummary += "\ncah answers! - List the submitted white cards anytime (czar only)"
 helpSummary += "\ncah choose <#> - Choose a winning answer (czar only)"
 helpSummary += "\ncah status - Display summary of current game"
 helpSummary += "\ncah skip - Discard current black card and assign a new Card Czar"
@@ -191,7 +191,8 @@ game_state_string = () ->
   if !db.czar?
     return "Waiting for players."
   else
-    return "*#{db.blackCard}* [#{db.czar}, #{db.answers.length}/#{db.activePlayers.length-1}]"
+    
+    return "*#{db.blackCard}* [#{db.czar}, #{db.answers.length}/#{db.activePlayers.length - 1}]"
 
 # @param res: message object
 # @return name of message sender
@@ -231,8 +232,8 @@ module.exports = (robot) ->
       else
         res.send responseString
     else
-      res.reply "NOPE, not everyone has responded yet! (#{status})\n(Czars can use 'cah answers!' to see answers early)"
-
+      res.reply "NOPE, not everyone has responded yet! (#{status})"
+  
   # combo hear and respond, prepends ^ to hear regex
   # good for allowing same commands in room and DM
   robot.hearspond = (regex, cb) ->
@@ -339,10 +340,10 @@ module.exports = (robot) ->
       res.reply "Submission accepted."
 
 
-  robot.hearspond /cah answers$/i, (res) ->
+  robot.hear /^cah answers$/i, (res) ->
     show_answers res
 
-  robot.hearspond /cah answers!/i, (res) ->
+  robot.hear /^cah answers!/i, (res) ->
     if (sender(res) != db.czar)
       res.reply "Whoa easy only the czar can force out the answers"
       return
