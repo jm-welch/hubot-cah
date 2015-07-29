@@ -1,7 +1,8 @@
-# Cards Against Humanity for Hubot
+# Cards Against Humanity for Hubot* 
 
-https://www.npmjs.com/package/hubot-humanity
-v0.0.1
+*cool kids fork
+
+[![Build Status](https://travis-ci.org/jasonrhodes/hubot-cah.svg?branch=master)](https://travis-ci.org/jasonrhodes/hubot-cah)
 
 ## Usage
 
