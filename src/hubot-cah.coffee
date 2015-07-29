@@ -60,6 +60,7 @@ random_white_card = () ->
   return whiteCards[cardIndex]
 
 db = {
+  gameroom:       null,                 # room game was started in (first join)
   scores:         {},                   # {<name>: <score>, ...}
   activePlayers:  [],                   # [<player name>, ...]
   blackCard:      random_black_card(),  # <card text>
@@ -77,6 +78,9 @@ fix_hands = () ->
         cardArray.push random_white_card()
       newHands[name] = cardArray
   db.hands = newHands
+
+set_room = (res) ->
+  db.room = db.room || res.message.room
 
 # add player to active list
 # fix their hand so it contains five cards
@@ -244,6 +248,7 @@ module.exports = (robot) ->
     res.send helpSummary
 
   robot.hear /^cah join$/i, (res) ->
+    set_room(res)
     name = sender(res)
     add_player(name)
     res.reply "You are now an active CAH player."
