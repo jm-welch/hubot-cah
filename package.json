@@ -29,7 +29,7 @@
   },
   "main": "index.coffee",
   "scripts": {
-    "test": "./node_modules/.bin mocha -r spec"
+    "test": "./node_modules/.bin/mocha --reporter=spec"
   },
   "homepage": "https://github.com/coryallegory/hubot-cah",
   "directories": {
