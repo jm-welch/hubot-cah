@@ -90,7 +90,4 @@ describe('hubot-cah // cool kids fork', function () {
     expect(resMock.reply).to.have.been.calledWith('You are now an active CAH player.');
   });
 
-  it('should do something');
-  
-
 });
