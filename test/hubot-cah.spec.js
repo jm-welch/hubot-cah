@@ -89,6 +89,8 @@ describe('hubot-cah // cool kids fork', function () {
     expect(robotMock.brain.data.cah.activePlayers).to.deep.equal([ "billmurray" ]);
     expect(resMock.reply).to.have.been.calledWith('You are now an active CAH player.');
   });
+
+  it('should do something');
   
 
 });
