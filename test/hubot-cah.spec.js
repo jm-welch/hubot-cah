@@ -7,35 +7,50 @@ var cah = require('../src/hubot-cah');
 
 chai.use(require('sinon-chai'));
 
+function RobotMock() {
+  this.hear = sinon.stub();
+  this.respond = sinon.stub();
+  this.messageRoom = sinon.stub();
+  this.error = sinon.stub();
+  this.logger = {
+    error: sinon.stub()
+  };
+  this.brain = new EE();
+  this.brain.data = {};
+}
+
+function ResMock() {
+  this.send = sinon.stub(),
+  this.reply = sinon.stub(),
+  this.message = {
+    user: {
+      name: 'billmurray'
+    }
+  };
+}
+
 describe('hubot-cah // cool kids fork', function () {
   var robotMock;
   var resMock;
+  var cachedDb;
+
+  before(function () {
+    // Get copy of what inner db is like at start, to reset in afterEach
+    var robot = new RobotMock();
+    cah(robot);
+    robot.brain.emit('loaded');
+    cachedDb = JSON.stringify(robot.brain.data.cah);
+  });
 
   beforeEach(function () {
+    robotMock = new RobotMock();    
+    resMock = new ResMock();
+  });
 
-    robotMock = {
-      hear: sinon.stub(),
-      respond: sinon.stub(),
-      messageRoom: sinon.stub(),
-      error: sinon.stub(),
-      logger: {
-        error: sinon.stub()
-      },
-      brain: new EE()
-    };
-
-    robotMock.brain.data = {};
-    
-    resMock = {
-      send: sinon.stub(),
-      reply: sinon.stub(),
-      message: {
-        user: {
-          name: 'billmurray'
-        }
-      }
-    };
-
+  afterEach(function () {
+    // Reset inner db to it's original state
+    robotMock.brain.data.cah = JSON.parse(cachedDb);
+    robotMock.brain.emit('loaded');
   });
 
   it('should log on robot error', function () {
@@ -58,14 +73,14 @@ describe('hubot-cah // cool kids fork', function () {
     expect(robotMock.brain.data.cah.activePlayers).to.exist;
   });
 
-  it.skip('should load pre-existing brain data', function () {
-    // var preExistingData = { fake: 'data' };
-    robotMock.brain.data.cah = 'some data';
+  it('should load pre-existing brain data', function () {
+    var preExistingData = { fake: 'data' };
+    robotMock.brain.data.cah = preExistingData;
 
     cah(robotMock);
     robotMock.brain.emit('loaded');
 
-    expect(robotMock.brain.data.cah).to.equal('some data');
+    expect(robotMock.brain.data.cah).to.deep.equal(preExistingData);
   });
 
   it('should create a hearspond frankensteinian monstrosity', function () {
@@ -79,6 +94,7 @@ describe('hubot-cah // cool kids fork', function () {
   it('should print help text command list', function () {
     robotMock.respond.withArgs(/cah help$/i).yields(resMock);
     cah(robotMock);
+    robotMock.brain.emit('loaded');
     expect(resMock.send).to.have.been.calledWithMatch(/^_hubot-cah commands:_/);
   });
 
@@ -88,6 +104,7 @@ describe('hubot-cah // cool kids fork', function () {
     robotMock.brain.emit('loaded');
     expect(robotMock.brain.data.cah.activePlayers).to.deep.equal([ "billmurray" ]);
     expect(resMock.reply).to.have.been.calledWith('You are now an active CAH player.');
+    expect(robotMock.brain.data.cah.hands['billmurray'].length).to.equal(5);
   });
 
 });
