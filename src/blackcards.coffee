@@ -9,7 +9,7 @@ module.exports = [
   "(Pick 3) _____ + _____ = _____",
   "(Pick 2) An international tribunal has found _____ guilty of _____.",
   "(Pick 2) An the Academy Award for _____ goes to _____.",
-  "(Pick 2) Before _____, all we had was_____.",
+  "(Pick 2) Before _____, all we had was _____.",
   "(Pick 2) Dear Sir or Madam, We regret to inform you that the office of _____ has denied your request for _____.",
   "(Pick 2) For my next trick, I will pull _____ out of _____.",
   "(Pick 2) I never truly understood _____ until I encountered _____.",

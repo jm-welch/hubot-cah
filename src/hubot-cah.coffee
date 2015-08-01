@@ -49,6 +49,8 @@ blackCards = require('./blackcards.coffee')
 
 whiteCards = require('./whitecards.coffee')
 
+handsize = 7
+
 # @return black card text string
 random_black_card = () ->
   cardIndex = Math.floor(Math.random()*blackCards.length)
@@ -74,8 +76,10 @@ fix_hands = () ->
   newHands = {}
   for own name, cardArray of db.hands
     if name in db.activePlayers
-      while cardArray.length < 5
-        cardArray.push random_white_card()
+      while cardArray.length < handsize
+        newCard = random_white_card();
+        if cardArray.indexOf(newCard) == -1
+          cardArray.push newCard
       newHands[name] = cardArray
   db.hands = newHands
 
@@ -92,8 +96,10 @@ add_player = (playerName) ->
   if !db.scores[playerName]?
     db.scores[playerName] = 0
   cards = []
-  while cards.length < 5
-    cards.push random_white_card()
+  while cards.length < handsize
+    newCard = random_white_card();
+    if cards.indexOf(newCard) == -1
+      cards.push newCard
   db.hands[playerName] = cards
   if db.activePlayers.length == 1
     db.czar = playerName
@@ -313,11 +319,11 @@ module.exports = (robot) ->
     responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(res), responseString
 
-  robot.hearspond /cah (submit|play)( [1-5])+$/i, (res) ->
+  robot.hearspond new RegExp("cah (submit|play)( [1-"+handsize+"])+$"), (res) ->
     if sender(res) == db.czar
       res.reply "You are currently the Card Czar!"
       return
-    if db.hands[sender(res)].length < 5
+    if db.hands[sender(res)].length < handsize
       res.reply "You have already submitted cards for this round."
       return
     numString = res.match[0].replace(/^[^\d]+/, '')
