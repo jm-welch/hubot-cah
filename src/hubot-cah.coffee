@@ -319,7 +319,7 @@ module.exports = (robot) ->
     responseString += "\nCurrent black card: *#{db.blackCard}*"
     robot.messageRoom sender(res), responseString
 
-  robot.hearspond new RegExp("cah (submit|play)( [1-"+handsize+"])+$"), (res) ->
+  robot.hearspond new RegExp("cah (submit|play)( [1-"+handsize+"])+$", "i"), (res) ->
     if sender(res) == db.czar
       res.reply "You are currently the Card Czar!"
       return
