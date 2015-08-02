@@ -1,5 +1,4 @@
 #  White Cards Against Humanity cards to be played against Black cards
-#
 
 module.exports = [
   "72 virgins.",
@@ -544,7 +543,7 @@ module.exports = [
   "Slow motion.",
   "Smallpox blankets.",
   "Smegma.",
-  "Sneezing, farting, and coming at the same time."
+  "Sneezing, farting, and coming at the same time.",
   "Sniffing glue.",
   "Socks.",
   "Soiling oneself.",
@@ -685,7 +684,7 @@ module.exports = [
   "Vomiting mid-blowjob.",
   "Waiting 'til marriage.",
   "Waking up half-naked in a Denny's parking lot.",
-  "Warm, velvety muppet sex"
+  "Warm, velvety muppet sex",
   "Waterboarding.",
   "Weapons-grade plutonium.",
   "Wearing an octopus for a hat.",
@@ -707,5 +706,5 @@ module.exports = [
   "World peace.",
   "YOU MUST CONSTRUCT ADDITIONAL PYLONS.",
   "Yeast.",
-  "Zeus's sexual appetites.",
-]
+  "Zeus's sexual appetites."
+];

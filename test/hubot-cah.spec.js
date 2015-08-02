@@ -1,9 +1,10 @@
 require('coffee-script');
-var EE = require('events').EventEmitter;
-var chai = require('chai');
-var expect = require('chai').expect;
-var sinon = require('sinon');
-var cah = require('../src/hubot-cah');
+var EE = require('events').EventEmitter
+  , chai = require('chai')
+  , expect = require('chai').expect
+  , sinon = require('sinon')
+  , proxyquire = require('proxyquire').noCallThru()  // no call thru is needed because the cards files only export an array
+  , _ = require('lodash');
 
 chai.use(require('sinon-chai'));
 
@@ -30,11 +31,17 @@ function ResMock() {
 }
 
 describe('hubot-cah // cool kids fork', function () {
-  var robotMock;
-  var resMock;
-  var cachedDb;
+  var robotMock
+    , resMock
+    , cachedDb
+    , cah
+    , cards = ['card 1','card 2','card 3','card 4','card 5','card 6','card 7'];
 
   before(function () {
+    cah = proxyquire ('../src/hubot-cah', {
+      './whitecards.coffee': cards
+    });
+
     // Get copy of what inner db is like at start, to reset in afterEach
     var robot = new RobotMock();
     cah(robot);
@@ -98,13 +105,14 @@ describe('hubot-cah // cool kids fork', function () {
     expect(resMock.send).to.have.been.calledWithMatch(/^_hubot-cah commands:_/);
   });
 
-  it('should allow players to join and deal them 5 cards', function () {
+  it('should allow players to join and deal them 7 cards', function () {
     robotMock.hear.withArgs(/^cah join$/i).yields(resMock);
     cah(robotMock);
     robotMock.brain.emit('loaded');
     expect(robotMock.brain.data.cah.activePlayers).to.deep.equal([ "billmurray" ]);
     expect(resMock.reply).to.have.been.calledWith('You are now an active CAH player.');
-    expect(robotMock.brain.data.cah.hands['billmurray'].length).to.equal(5);
+    // check that the player got 7 unique cards
+    expect(_.uniq(robotMock.brain.data.cah.hands['billmurray']).length).to.equal(7);
   });
 
 });
