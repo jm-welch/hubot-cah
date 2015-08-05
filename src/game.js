@@ -36,13 +36,11 @@ Game.prototype.random_black_card = function () {
   return blackCards[cardIndex];
 };
 
-
 Game.prototype.random_white_card = function () {
   var cardIndex;
   cardIndex = Math.floor(Math.random() * whiteCards.length);
   return whiteCards[cardIndex];
 };
-
 
 Game.prototype.fix_hands = function () {
   var cardArray, name, newCard, newHands, ref;
@@ -53,7 +51,7 @@ Game.prototype.fix_hands = function () {
     cardArray = ref[name];
     if (indexOf.call(this.db.activePlayers, name) >= 0) {
       while (cardArray.length < this.db.handsize) {
-        newCard = random_white_card();
+        newCard = this.random_white_card();
         if (cardArray.indexOf(newCard) === -1) {
           cardArray.push(newCard);
         }
@@ -64,11 +62,9 @@ Game.prototype.fix_hands = function () {
   return this.db.hands = newHands;
 };
 
-
 Game.prototype.set_room = function (res) {
   return this.db.room = this.db.room || res.message.room;
 };
-
 
 Game.prototype.add_player = function (playerName) {
   var cards, newCard;
@@ -91,7 +87,6 @@ Game.prototype.add_player = function (playerName) {
     return this.db.blackCard = this.random_black_card();
   }
 };
-
 
 Game.prototype.remove_player = function (playerName) {
   var i;
@@ -123,7 +118,7 @@ Game.prototype.show_answers = function (res, force) {
     responseString = "White card submissions so far (" + status + "):";
     for (i = j = 0, ref = answers_n; j < ref; i = j += 1) {
       cards = answers[i][1];
-      responseString += "\n" + (i + 1) + ": " + (generate_phrase(db.blackCard, cards));
+      responseString += "\n" + (i + 1) + ": " + (this.generate_phrase(this.db.blackCard, cards));
     }
     if (force) {
       return this.robot.messageRoom(sender(res), responseString);
@@ -134,7 +129,6 @@ Game.prototype.show_answers = function (res, force) {
     return res.reply("NOPE, not everyone has responded yet! (" + status + ")");
   }
 };
-
 
 Game.prototype.generate_phrase = function () {
   var bi, blackBits, phrase, wi;
@@ -202,7 +196,7 @@ Game.prototype.submit = function(res) {
   } else {
     for (i = k = 0, ref = nums.length; k < ref; i = k += 1) {
       nums[i] = parseInt(nums[i], 10) - 1;
-      if (nums[i] >= this.db.hands[sender(res)].length) {
+      if (nums[i] >= this.db.hands[this.sender(res)].length) {
         res.reply(nums[i] + " is not a valid card number.");
         return;
       }
@@ -220,8 +214,6 @@ Game.prototype.submit = function(res) {
   }
 };
 
-
-
 Game.prototype.czar_choose_winner = function () {
   var answer, cards, czarIndex, j, len, ref, responseString, winner, winningPhrase;
   if (0 <= answerIndex && answerIndex < this.db.answers.length) {
@@ -229,11 +221,11 @@ Game.prototype.czar_choose_winner = function () {
     ref = this.db.answers;
     for (j = 0, len = ref.length; j < len; j++) {
       answer = ref[j];
-      responseString += "\n" + answer[0] + ": " + (generate_phrase(this.db.blackCard, answer[1]));
+      responseString += "\n" + answer[0] + ": " + (this.generate_phrase(this.db.blackCard, answer[1]));
     }
     winner = this.db.answers[answerIndex][0];
     cards = this.db.answers[answerIndex][1];
-    winningPhrase = generate_phrase(this.db.blackCard, cards);
+    winningPhrase = this.generate_phrase(this.db.blackCard, cards);
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
     if (this.db.scores[winner] == null) {
       this.db.scores[winner] = 1;
@@ -242,8 +234,8 @@ Game.prototype.czar_choose_winner = function () {
     }
   }
   this.db.answers = [];
-  fix_hands();
-  this.db.blackCard = random_black_card();
+  this.fix_hands();
+  this.db.blackCard = this.random_black_card();
   if (this.db.activePlayers.length === 0) {
     this.db.czar = null;
   } else if (this.db.czar == null) {
@@ -256,9 +248,8 @@ Game.prototype.czar_choose_winner = function () {
       this.db.czar = this.db.activePlayers[czarIndex + 1];
     }
   }
-  return responseString + "\n\nNext round:\n" + game_state_string();
+  return responseString + "\n\nNext round:\n" + this.game_state_string();
 };
-
 
 Game.prototype.game_state_string = function () {
   if (this.db.czar == null) {
@@ -267,7 +258,6 @@ Game.prototype.game_state_string = function () {
     return "*" + this.db.blackCard + "* [" + this.db.czar + ", " + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "]";
   }
 };
-
 
 Game.prototype.sender = function (res) {
   return res.message.user.name;
