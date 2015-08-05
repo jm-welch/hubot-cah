@@ -72,9 +72,9 @@ module.exports = (robot) ->
     if game.db.activePlayers.length < 1
       res.send "Waiting for players."
     else
-      responseString = "CAH Players: #{db.activePlayers[0]}"
+      responseString = "CAH Players: #{game.db.activePlayers[0]}"
       for i in [1...game.db.activePlayers.length] by 1
-        responseString += ", #{db.activePlayers[i]}"
+        responseString += ", #{game.db.activePlayers[i]}"
       res.send responseString
 
   robot.hearspond /cah leaders$/i, (res) ->
@@ -106,7 +106,7 @@ module.exports = (robot) ->
     if cards?
       for i in [0...cards.length] by 1
         responseString += "\n#{i+1}: #{cards[i]}"
-    responseString += "\nCurrent black card: *#{db.blackCard}*"
+    responseString += "\nCurrent black card: *#{game.db.blackCard}*"
     robot.messageRoom game.sender(res), responseString
 
 
