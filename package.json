@@ -18,11 +18,11 @@
     "url": "https://github.com/coryallegory/hubot-cah/issues"
   },
   "dependencies": {
-    "coffee-script": "~1.6"
+    "coffee-script": "~1.6",
+    "lodash": "^3.10.0"
   },
   "devDependencies": {
     "chai": "^3.2.0",
-    "lodash": "^3.10.0",
     "mocha": "^2.2.5",
     "proxyquire": "^1.6.0",
     "sinon": "^1.15.4",
