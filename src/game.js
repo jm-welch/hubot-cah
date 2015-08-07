@@ -130,7 +130,7 @@ Game.prototype.show_answers = function (res, force) {
   }
 };
 
-Game.prototype.generate_phrase = function () {
+Game.prototype.generate_phrase = function (blackCard, whiteCards) {
   var bi, blackBits, phrase, wi;
   phrase = "";
   blackBits = blackCard.split(blackBlank);
@@ -158,7 +158,7 @@ Game.prototype.generate_phrase = function () {
 };
 
 
-Game.prototype.submit_answer = function () {
+Game.prototype.submit_answer = function (playerName, handIndices) {
   var card, cards, i, j, k, len, len1, playerHand;
   playerHand = this.db.hands[playerName];
   cards = [];
@@ -214,7 +214,7 @@ Game.prototype.submit = function(res) {
   }
 };
 
-Game.prototype.czar_choose_winner = function () {
+Game.prototype.czar_choose_winner = function (answerIndex) {
   var answer, cards, czarIndex, j, len, ref, responseString, winner, winningPhrase;
   if (0 <= answerIndex && answerIndex < this.db.answers.length) {
     responseString = "Current round:";

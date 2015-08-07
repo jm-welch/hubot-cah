@@ -19,7 +19,7 @@ Game = require('./game')
 
 start = (robot, game) ->
   game.init robot.brain.data
-  robot.hearspond new RegExp("cah (submit|play)( [1-" + game.db.handsize + "])+$", "i"), game.submit.bind game
+  robot.hearspond new RegExp("cah (submit|play)( [1-" + game.db.handsize + "])+$", "i"), game.submit.bind(game)
 
 module.exports = (robot) ->
 
