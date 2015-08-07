@@ -28,6 +28,7 @@ module.exports = (robot) ->
   robot.error (err, res) ->
     if res?
       res.reply "Someone broke me again: #{err.message}"
+      robot.messageRoom "#debug", "CAH Error:\n\n#{err.message}\n\n===\n\n#{err.stack}"
     robot.logger.error err.message
     robot.logger.error err.stack
     robot.logger.error JSON.stringify(robot.brain.data.cah, null, '\t')
@@ -50,6 +51,7 @@ module.exports = (robot) ->
     delete robot.brain.data.cah
     global.game = new Game(robot)
     start(robot, game)
+    res.reply "💥 the game has been reset 💥"
 
   robot.hearspond /cah help$/i, (res) ->
     res.send helpSummary
