@@ -40,6 +40,9 @@ module.exports = (robot) ->
     this.hear.call(this, alt, cb)
     this.respond.call(this, regex, cb)
 
+  robot.hearspond /cah db$/i, (res) ->
+    res.reply JSON.stringify game.db
+    
   robot.hearspond /cah help$/i, (res) ->
     res.send helpSummary
 
