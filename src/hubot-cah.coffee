@@ -28,8 +28,7 @@ module.exports = (robot) ->
   robot.error (err, res) ->
     if res?
       res.reply "Someone broke me again: #{err.message}"
-      res.reply err.stack
-      # robot.messageRoom "debug", "CAH Error:\n\n#{err.message}\n\n===\n\n#{err.stack}"
+      res.send err.stack
     robot.logger.error err.message
     robot.logger.error err.stack
     robot.logger.error JSON.stringify(robot.brain.data.cah, null, '\t')
