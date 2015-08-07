@@ -30,7 +30,7 @@ module.exports = (robot) ->
 
   robot.brain.on "loaded", =>
     game.init robot.brain.data
-    robot.hearspond new RegExp("cah (submit|play)( [1-" + game.db.handsize + "])+$", "i"), game.submit
+    robot.hearspond new RegExp("cah (submit|play)( [1-" + game.db.handsize + "])+$", "i"), game.submit.bind game
   
   # combo hear and respond, prepends ^ to hear regex
   # good for allowing same commands in room and DM
