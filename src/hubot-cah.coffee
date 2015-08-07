@@ -17,9 +17,13 @@ helpSummary += "\ncah skip - Discard current black card and assign a new Card Cz
 
 Game = require('./game')
 
+start = (robot, game) ->
+  game.init robot.brain.data
+  robot.hearspond new RegExp("cah (submit|play)( [1-" + game.db.handsize + "])+$", "i"), game.submit.bind game
+
 module.exports = (robot) ->
 
-  game = new Game(robot)
+  global.game = new Game(robot)
 
   robot.error (err, res) ->
     if res?
@@ -29,8 +33,7 @@ module.exports = (robot) ->
     robot.logger.error JSON.stringify(robot.brain.data.cah, null, '\t')
 
   robot.brain.on "loaded", =>
-    game.init robot.brain.data
-    robot.hearspond new RegExp("cah (submit|play)( [1-" + game.db.handsize + "])+$", "i"), game.submit.bind game
+    start(robot, game)
   
   # combo hear and respond, prepends ^ to hear regex
   # good for allowing same commands in room and DM
@@ -42,7 +45,12 @@ module.exports = (robot) ->
 
   robot.hearspond /cah db$/i, (res) ->
     res.reply JSON.stringify game.db
-    
+
+  robot.hear /^cah reset-game$/i, (res) ->
+    delete robot.brain.data.cah
+    global.game = new Game(robot)
+    start(robot, game)
+
   robot.hearspond /cah help$/i, (res) ->
     res.send helpSummary
 
