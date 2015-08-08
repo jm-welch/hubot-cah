@@ -35,7 +35,7 @@ module.exports = (robot) ->
 
   robot.brain.on "loaded", =>
     start(robot, game)
-  
+
   # combo hear and respond, prepends ^ to hear regex
   # good for allowing same commands in room and DM
   robot.hearspond = (regex, cb) ->
@@ -43,6 +43,10 @@ module.exports = (robot) ->
     args = Array.prototype.slice(arguments, 1)
     this.hear.call(this, alt, cb)
     this.respond.call(this, regex, cb)
+
+  robot.respond /message ([^\s]+)/i, (res) ->
+    room = res.match[1];
+    robot.messageRoom(room, 'here is a message');
 
   robot.hearspond /cah db$/i, (res) ->
     res.reply JSON.stringify game.db
