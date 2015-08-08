@@ -121,7 +121,7 @@ Game.prototype.show_answers = function (res, force) {
       responseString += "\n" + (i + 1) + ": " + (this.generate_phrase(this.db.blackCard, cards));
     }
     if (force) {
-      return this.robot.messageRoom(sender(res), responseString);
+      return this.robot.messageRoom(this.sender(res), responseString);
     } else {
       return res.send(responseString);
     }
