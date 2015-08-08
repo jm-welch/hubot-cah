@@ -251,11 +251,27 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
   return responseString + "\n\nNext round:\n" + this.game_state_string();
 };
 
+Game.prototype.who_hasnt_answered = function () {
+  var self = this;
+  var responders = this.db.activePlayers.filter(function (p) {
+    return p !== self.db.czar;
+  });
+  var answered = this.db.answers.map(function (a) {
+    return a[0];
+  });
+  return _.difference(responders, answered);
+};
+
 Game.prototype.game_state_string = function () {
   if (this.db.czar == null) {
     return "Waiting for players.";
   } else {
-    return "*" + this.db.blackCard + "* [" + this.db.czar + ", " + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "]";
+    var remaining = this.who_hasnt_answered();
+    var message = "*" + this.db.blackCard + "* [" + this.db.czar + ", " + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "]";
+    if (remaining) {
+      message += "\n_Waiting on: " + remaining.join(', ') + "_";
+    }
+    return message;
   }
 };
 

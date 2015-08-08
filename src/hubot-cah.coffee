@@ -28,7 +28,7 @@ module.exports = (robot) ->
   robot.error (err, res) ->
     if res?
       res.reply "Someone broke me again: #{err.message}"
-      res.send err.stack
+      robot.messageRoom '#debug', err.stack
     robot.logger.error err.message
     robot.logger.error err.stack
     robot.logger.error JSON.stringify(robot.brain.data.cah, null, '\t')
@@ -44,9 +44,8 @@ module.exports = (robot) ->
     this.hear.call(this, alt, cb)
     this.respond.call(this, regex, cb)
 
-  robot.respond /message ([^\s]+)/i, (res) ->
-    room = res.match[1];
-    robot.messageRoom(room, 'here is a message');
+  robot.respond /message ([^\s]+) (.*)$/i, (res) ->
+    robot.messageRoom(res.match[1], res.match[2]);
 
   robot.hearspond /cah db$/i, (res) ->
     res.reply JSON.stringify game.db
@@ -55,7 +54,7 @@ module.exports = (robot) ->
     delete robot.brain.data.cah
     global.game = new Game(robot)
     start(robot, game)
-    res.reply "💥 the game has been reset 💥"
+    res.reply "💥💥💥💥💥 the game has been reset 💥💥💥💥💥"
 
   robot.hearspond /cah help$/i, (res) ->
     res.send helpSummary
@@ -149,7 +148,7 @@ module.exports = (robot) ->
       else
         res.send game.czar_choose_winner num
 
-  robot.hearspond /cah (status|question)$/i, (res) ->
+  robot.hearspond /cah status ?$/i, (res) ->
     res.send game.game_state_string()
 
   robot.hear /^cah skip$/i, (res) ->
