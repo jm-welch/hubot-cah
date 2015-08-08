@@ -267,10 +267,10 @@ Game.prototype.game_state_string = function () {
     return "Waiting for players.";
   } else {
     var remaining = this.who_hasnt_answered();
-    var message = "*" + this.db.blackCard + "* [" + this.db.czar + ", " + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "]";
-    if (remaining) {
-      message += "\n_Waiting on: " + remaining.join(', ') + "_";
-    }
+    var message = "*" + this.db.blackCard + "* [czar: " + this.db.czar + "]";
+    
+    message += "\n[" + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "] _Waiting on: " + (remaining ? remaining.join(', ') : "nobodyz") + "_";
+
     return message;
   }
 };
