@@ -74,8 +74,10 @@ Game.prototype.checkMode = function (mode) {
 Game.prototype.add_urban_dictionary_card = function () {
   var self = this;
   this.db.decks.ud = this.db.decks.ud || [];
+
   urbanDictionary.getRandomEntry(function (err, entry) {
     if (!err && entry && entry.term) {
+      // self.robot.messageRoom('rhodes.json', 'added ud card ' + entry.term);
       self.db.decks.ud.push(entry.term + ' *');
       self.db.decks.ud = _.uniq(self.db.decks.ud);
     }
@@ -87,7 +89,7 @@ Game.prototype.deal_card = function (color) {
   
   if (color === 'white' && this.checkMode('urban-dictionary')) {
     var shouldPick = (_.random(0, this.db.handsize) <= 1);
-    if (shouldPick && this.db.decks.ud && this.db.decks.ud.length > 0) {
+    if (shouldPick && Array.isArray(this.db.decks.ud)) {
       this.add_urban_dictionary_card();
       next = this.db.decks.ud.shift();
     }
