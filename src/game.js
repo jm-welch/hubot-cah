@@ -86,10 +86,9 @@ Game.prototype.deal_card = function (color) {
   var next;
   
   if (color === 'white' && this.checkMode('urban-dictionary')) {
-    this.add_urban_dictionary_card();
-    var udCardsPerRound = 2;
-    var shouldPick = (_.random(0, (this.db.activePlayers.length * this.db.handsize / udCardsPerRound)) <= 1);
+    var shouldPick = (_.random(0, this.db.handsize) <= 1);
     if (shouldPick && this.db.decks.ud && this.db.decks.ud.length > 0) {
+      this.add_urban_dictionary_card();
       next = this.db.decks.ud.shift();
     }
   }
