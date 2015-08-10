@@ -79,7 +79,6 @@ describe('hubot-cah // cool kids fork', function () {
     robotMock.brain.emit('loaded');
 
     expect(robotMock.brain.data.cah.czar).to.be.null;
-    expect(robotMock.brain.data.cah.blackCard).to.exist;
     expect(robotMock.brain.data.cah.hands).to.exist;
     expect(robotMock.brain.data.cah.activePlayers).to.exist;
   });

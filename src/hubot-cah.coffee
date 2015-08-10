@@ -53,13 +53,13 @@ module.exports = (robot) ->
     if (res.match[1])
       _.forEach res.match[1].split('.').slice(1), (m) ->
         response = response[m];
-    res.reply JSON.stringify(response, null, 2)
+    res.send JSON.stringify(response, null, 2)
 
   robot.hear /^cah reset-game$/i, (res) ->
     delete robot.brain.data.cah
     global.game = new Game(robot)
     start(robot, game)
-    res.reply "💥💥💥💥💥 the game has been reset 💥💥💥💥💥"
+    res.reply "💥💥💥💥💥  the game has been reset 💥💥💥💥💥"
 
   robot.hearspond /cah help$/i, (res) ->
     res.send helpSummary
