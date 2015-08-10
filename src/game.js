@@ -1,4 +1,6 @@
 var _ = require('lodash');
+var urbanDictionary = require('./urbanDictionary');
+
 var defaultData = {
   gameroom: null,
   scores: {},
@@ -6,6 +8,8 @@ var defaultData = {
   blackCard: null,
   czar: null,
   hands: {},
+  modes: {},
+  decks: {},
   answers: [],
   handsize: 7
 };
@@ -26,20 +30,81 @@ var whiteCards = require('./whitecards.coffee');
 Game.prototype.init = function (data) {
   this.initialized = true;
   data.cah = data.cah || _.cloneDeep(defaultData);
-  this.db = data.cah;
-  this.db.blackCard = this.random_black_card();
+  this.db = _.defaults(data.cah, defaultData);
+
+  this.db.decks.ud = [];
+
+  this.shuffle();
+};
+
+Game.prototype.toggleMode = function (mode) {
+  this.db.modes = this.db.modes || {};
+  this.db.modes[mode] = !this.db.modes[mode];
+  return this.db.modes[mode];
+}
+
+Game.prototype.message = function (message) {
+  if (this.db.room) {
+    this.robot.messageRoom(this.db.room, message);
+  }
+};
+
+Game.prototype.shuffle = function (color) {
+  this.db.decks = this.db.decks || {};
+  if (!color || color === 'black') {
+    this.db.decks.black = _.shuffle(blackCards);
+  }
+  if (!color || color === 'white') {
+    this.db.decks.white = _.shuffle(whiteCards);
+  }
 };
 
 Game.prototype.random_black_card = function () {
-  var cardIndex;
-  cardIndex = Math.floor(Math.random() * blackCards.length);
-  return blackCards[cardIndex];
+  return this.db.decks.black[_.random(0, this.db.decks.black.length)];
 };
 
 Game.prototype.random_white_card = function () {
-  var cardIndex;
-  cardIndex = Math.floor(Math.random() * whiteCards.length);
-  return whiteCards[cardIndex];
+  return this.db.decks.white[_.random(0, this.db.decks.white.length)];
+};
+
+Game.prototype.checkMode = function (mode) {
+  return this.db.modes && this.db.modes[mode];
+};
+
+Game.prototype.add_urban_dictionary_card = function () {
+  var self = this;
+  this.db.decks.ud = this.db.decks.ud || [];
+  urbanDictionary.getRandomEntry(function (err, entry) {
+    if (!err && entry && entry.term) {
+      self.db.decks.ud.push(entry.term + ' *');
+      self.db.decks.ud = _.uniq(self.db.decks.ud);
+    }
+  });
+};
+
+Game.prototype.deal_card = function (color) {
+  var next;
+  
+  if (color === 'white' && this.checkMode('urban-dictionary')) {
+    this.add_urban_dictionary_card();
+    var udCardsPerRound = 2;
+    var shouldPick = (_.random(0, (this.db.activePlayers.length * this.db.handsize / udCardsPerRound)) <= 1);
+    if (shouldPick && this.db.decks.ud && this.db.decks.ud.length > 0) {
+      next = this.db.decks.ud.shift();
+    }
+  }
+
+  if (!next) {
+    next = this.db.decks[color].shift();
+  }
+
+  if (!next) {
+    this.message("Out of " + color + " cards, re-shuffling the deck");
+    this.shuffle(color);
+    return this.deal_card(color);
+  }
+
+  return next;
 };
 
 Game.prototype.fix_hands = function () {
@@ -51,10 +116,7 @@ Game.prototype.fix_hands = function () {
     cardArray = ref[name];
     if (indexOf.call(this.db.activePlayers, name) >= 0) {
       while (cardArray.length < this.db.handsize) {
-        newCard = this.random_white_card();
-        if (cardArray.indexOf(newCard) === -1) {
-          cardArray.push(newCard);
-        }
+        cardArray.push(this.deal_card('white'));
       }
       newHands[name] = cardArray;
     }
@@ -76,15 +138,12 @@ Game.prototype.add_player = function (playerName) {
   }
   cards = [];
   while (cards.length < this.db.handsize) {
-    newCard = this.random_white_card();
-    if (cards.indexOf(newCard) === -1) {
-      cards.push(newCard);
-    }
+    cards.push(this.deal_card('white'));
   }
   this.db.hands[playerName] = cards;
   if (this.db.activePlayers.length === 1) {
     this.db.czar = playerName;
-    return this.db.blackCard = this.random_black_card();
+    return this.db.blackCard = this.deal_card('black');
   }
 };
 
@@ -99,12 +158,13 @@ Game.prototype.remove_player = function (playerName) {
   }
   if (this.db.czar === playerName) {
     if (this.db.activePlayers.length === 0) {
-      return this.db.czar = null;
-    } else if (i >= this.db.activePlayers.length) {
-      return this.db.czar = this.db.activePlayers[0];
-    } else {
-      return this.db.czar = this.db.activePlayers[i];
-    }
+      this.db.czar = null;
+      return;
+    }    
+    this.db.czar = this.db.activePlayers[_.random(0, this.db.activePlayers.length)];
+    _.remove(this.db.answers, function (answer) {
+      return answer[0] === this.db.czar;
+    });
   }
 };
 
@@ -235,7 +295,7 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
   }
   this.db.answers = [];
   this.fix_hands();
-  this.db.blackCard = this.random_black_card();
+  this.db.blackCard = this.deal_card('black');
   if (this.db.activePlayers.length === 0) {
     this.db.czar = null;
   } else if (this.db.czar == null) {

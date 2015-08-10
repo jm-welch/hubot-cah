@@ -16,6 +16,7 @@ helpSummary += "\ncah status - Display summary of current game"
 helpSummary += "\ncah skip - Discard current black card and assign a new Card Czar"
 
 Game = require('./game')
+_ = require('lodash')
 
 start = (robot, game) ->
   game.init robot.brain.data
@@ -47,8 +48,12 @@ module.exports = (robot) ->
   robot.respond /message ([^\s]+) (.*)$/i, (res) ->
     robot.messageRoom(res.match[1], res.match[2]);
 
-  robot.hearspond /cah db$/i, (res) ->
-    res.reply JSON.stringify game.db
+  robot.hearspond /cah db([a-z0-9_\.]*)? ?$/i, (res) ->
+    response = game.db
+    if (res.match[1])
+      _.forEach res.match[1].split('.').slice(1), (m) ->
+        response = response[m];
+    res.reply JSON.stringify(response, null, 2)
 
   robot.hear /^cah reset-game$/i, (res) ->
     delete robot.brain.data.cah
@@ -69,6 +74,10 @@ module.exports = (robot) ->
     name = game.sender(res)
     game.remove_player(name)
     res.send "#{name} is no longer a CAH player. Their score will be preserved should they decide to play again."
+
+  robot.hear /^cah toggle mode (.*)$/i, (res) ->
+    mode = res.match[1].trim()
+    res.send mode + ' mode has been set to ' + game.toggleMode(mode)
 
   robot.hear /^cah kick( [^\s]+)$/i, (res) ->
     name = res.match[1].trim()
@@ -152,4 +161,6 @@ module.exports = (robot) ->
     res.send game.game_state_string()
 
   robot.hear /^cah skip$/i, (res) ->
-    res.send game.czar_choose_winner -1
+    game.db.answers = []
+    game.db.blackCard = game.deal_card('black')
+    res.send game.game_state_string()
