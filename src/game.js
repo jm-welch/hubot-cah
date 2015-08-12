@@ -295,9 +295,9 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
     this.db.scores[winner] = Number(this.db.scores[winner]) + 1;
 
-    if (this.db.scores[winner] === 7) {
+    if (this.db.scores[winner] >= 7) {
       // announce winner, then reset
-      res.send("\n\nTA DA! You've all lost to " + winner + "! I hope you're ashamed.\n\n")
+      this.robot.messageRoom('#' + this.db.room, "🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
       this.reset(res, { czar: winner });
       return;
     }
