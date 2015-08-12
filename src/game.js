@@ -295,7 +295,7 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
     this.db.scores[winner] = Number(this.db.scores[winner]) + 1;
 
-    if (this.db.scores[winner] >= 7) {
+    if (this.db.scores[winner] >= 1) {
       // announce winner, then reset
       this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
       this.reset({ czar: winner });
@@ -361,7 +361,7 @@ Game.prototype.game_state_string = function () {
     var remaining = this.who_hasnt_answered();
     var message = "*" + this.db.blackCard + "* [czar: " + this.db.czar + "]";
 
-    message += "\n[" + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "] _Waiting on: " + (remaining ? remaining.join(', ') : "nobodyz") + "_";
+    message += "\n[" + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "] _Waiting on: " + (remaining.length > 0 ? remaining.join(', ') : "nobodyz") + "_";
 
     return message;
   }
