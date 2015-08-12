@@ -13,7 +13,7 @@ var defaultData = {
   handsize: 7
 };
 
-var Game = function (robot) { 
+var Game = function (robot) {
   this.robot = robot;
   this.db = {};
 };
@@ -84,7 +84,7 @@ Game.prototype.add_urban_dictionary_card = function () {
 
 Game.prototype.deal_card = function (color) {
   var next;
-  
+
   if (color === 'white' && this.checkMode('urban-dictionary')) {
     var shouldPick = (_.random(0, this.db.handsize) <= 1);
     if (shouldPick && Array.isArray(this.db.decks.ud)) {
@@ -173,7 +173,7 @@ Game.prototype.remove_player = function (playerName) {
 
 Game.prototype.show_answers = function (res, force) {
   var answers, answers_n, cards, i, j, ref, responseString, status, submitters_n;
-  answers = this.db.answers;
+  answers = _.shuffle(this.db.answers);
   answers_n = answers.length;
   submitters_n = this.db.activePlayers.length - 1;
   if (force || (answers_n >= submitters_n)) {
@@ -189,7 +189,7 @@ Game.prototype.show_answers = function (res, force) {
     }
   } else {
     return res.reply("NOPE, not everyone has responded yet!");
-  } 
+  }
 };
 
 Game.prototype.generate_phrase = function (blackCard, whiteCards) {
@@ -360,7 +360,7 @@ Game.prototype.game_state_string = function () {
   } else {
     var remaining = this.who_hasnt_answered();
     var message = "*" + this.db.blackCard + "* [czar: " + this.db.czar + "]";
-    
+
     message += "\n[" + this.db.answers.length + "/" + (this.db.activePlayers.length - 1) + "] _Waiting on: " + (remaining ? remaining.join(', ') : "nobodyz") + "_";
 
     return message;
