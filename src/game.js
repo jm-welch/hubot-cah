@@ -10,7 +10,8 @@ var defaultData = {
   modes: {},
   decks: {},
   answers: [],
-  handsize: 7
+  handsize: 7,
+  playToScore: 7
 };
 
 var Game = function (robot) {
@@ -295,7 +296,7 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
     this.db.scores[winner] = Number(this.db.scores[winner]) + 1;
 
-    if (this.db.scores[winner] >= 1) {
+    if (this.db.scores[winner] >= this.db.playToScore || 7) {
       // announce winner, then reset
       this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
       this.reset({ czar: winner }, true);
