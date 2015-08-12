@@ -297,7 +297,7 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
 
     if (this.db.scores[winner] >= 7) {
       // announce winner, then reset
-      this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
+      this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
       this.reset({ czar: winner });
       return;
     }
@@ -321,17 +321,24 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
 };
 
 Game.prototype.reset = function (db) {
+  var self = this;
   var modes = this.db.modes;
   var players = this.db.activePlayers;
   this.db = _.cloneDeep(defaultData);
   this.db.modes = modes;
-  this.db.activePlayers = players;
   this.db = _.defaults(db, this.db);
+
+  this.shuffle();
+  _.forEach(players, function (p) {
+    self.add_player(p);
+  });
+
+  this.db.czar = db.czar || this.db.czar;
+
   if (!this.db.czar) {
     this.db.czar = _.sample(this.db.activePlayers.length);
   }
-  this.shuffle();
-  this.fix_hands();
+  
   this.message('Starting a new game... now!');
   this.message(this.game_state_string());
 };
