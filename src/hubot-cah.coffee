@@ -57,6 +57,7 @@ module.exports = (robot) ->
 
   robot.hear /^cah reset-game$/i, (res) ->
     delete robot.brain.data.cah
+    delete global.game
     global.game = new Game(robot)
     start(robot, game)
     res.reply "💥💥💥💥💥  the game has been reset 💥💥💥💥💥"
