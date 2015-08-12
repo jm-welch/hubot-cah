@@ -275,8 +275,8 @@ Game.prototype.submit = function(res) {
         }
       }
     }
+    res.reply("Submission accepted.");
     this.submit_answer(res, nums);
-    return res.reply("Submission accepted.");
   }
 };
 
