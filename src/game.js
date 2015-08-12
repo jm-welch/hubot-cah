@@ -177,7 +177,7 @@ Game.prototype.show_answers = function (res, force) {
   answers_n = answers.length;
   submitters_n = this.db.activePlayers.length - 1;
   if (force || (answers_n >= submitters_n)) {
-    responseString = "White card submissions so far (" + status + "):";
+    responseString = "White card submissions:";
     for (i = j = 0, ref = answers_n; j < ref; i = j += 1) {
       cards = answers[i][1];
       responseString += "\n" + (i + 1) + ": " + (this.generate_phrase(this.db.blackCard, cards));
@@ -185,7 +185,7 @@ Game.prototype.show_answers = function (res, force) {
     if (force) {
       return this.robot.messageRoom(this.sender(res), responseString);
     } else {
-      return res.send(responseString + "\n\n*Time to choose, " + this.db.czar + "!*");
+      return this.robot.messageRoom('#' + this.db.room, responseString + "\n\n*Time to choose, " + this.db.czar + "!*");
     }
   } else {
     return res.reply("NOPE, not everyone has responded yet!");
