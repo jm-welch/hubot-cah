@@ -44,7 +44,7 @@ Game.prototype.toggleMode = function (mode) {
 
 Game.prototype.message = function (message) {
   if (this.db.room) {
-    this.robot.messageRoom(this.db.room, message);
+    this.robot.messageRoom('#' + this.db.room, message);
   }
 };
 
@@ -185,7 +185,7 @@ Game.prototype.show_answers = function (res, force) {
     if (force) {
       return this.robot.messageRoom(this.sender(res), responseString);
     } else {
-      return this.robot.messageRoom('#' + this.db.room, responseString + "\n\n*Time to choose, " + this.db.czar + "!*");
+      return this.message(responseString + "\n\n*Time to choose, " + this.db.czar + "!*");
     }
   } else {
     return res.reply("NOPE, not everyone has responded yet!");
@@ -297,8 +297,8 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
 
     if (this.db.scores[winner] >= 7) {
       // announce winner, then reset
-      this.robot.messageRoom('#' + this.db.room, "🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
-      this.reset(res, { czar: winner });
+      this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
+      this.reset({ czar: winner });
       return;
     }
   }
@@ -320,7 +320,7 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
   return responseString + "\n\nNext round:\n" + this.game_state_string();
 };
 
-Game.prototype.reset = function (res, db) {
+Game.prototype.reset = function (db) {
   var modes = this.db.modes;
   var players = this.db.activePlayers;
   this.db = _.cloneDeep(defaultData);
@@ -332,8 +332,8 @@ Game.prototype.reset = function (res, db) {
   }
   this.shuffle();
   this.fix_hands();
-  res.send('Starting a new game... now!');
-  res.send(this.game_state_string());
+  this.message('Starting a new game... now!');
+  this.message(this.game_state_string());
 };
 
 Game.prototype.who_hasnt_answered = function () {
