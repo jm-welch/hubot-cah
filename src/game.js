@@ -2,7 +2,6 @@ var _ = require('lodash');
 var urbanDictionary = require('./urbanDictionary');
 
 var defaultData = {
-  gameroom: null,
   scores: {},
   activePlayers: [],
   blackCard: null,
@@ -77,8 +76,7 @@ Game.prototype.add_urban_dictionary_card = function () {
 
   urbanDictionary.getRandomEntry(function (err, entry) {
     if (!err && entry && entry.term) {
-      // self.robot.messageRoom('rhodes.json', 'added ud card ' + entry.term);
-      self.db.decks.ud.push(entry.term + ' *');
+      self.db.decks.ud.push(entry.term + '.');
       self.db.decks.ud = _.uniq(self.db.decks.ud);
     }
   });
@@ -148,9 +146,14 @@ Game.prototype.add_player = function (playerName) {
   }
 };
 
+Game.prototype.removeAnswer = function (player) {
+  _.remove(answers, function (answer) {
+    return answer[0] === player;
+  });
+};
+
 Game.prototype.remove_player = function (playerName) {
-  var i;
-  i = this.db.activePlayers.indexOf(playerName);
+  var i = this.db.activePlayers.indexOf(playerName);
   if (i >= 0) {
     this.db.activePlayers.splice(i, 1);
   }
@@ -161,12 +164,11 @@ Game.prototype.remove_player = function (playerName) {
     if (this.db.activePlayers.length === 0) {
       this.db.czar = null;
       return;
-    }    
-    this.db.czar = this.db.activePlayers[_.random(0, this.db.activePlayers.length)];
-    _.remove(this.db.answers, function (answer) {
-      return answer[0] === this.db.czar;
-    });
+    }
+    this.db.czar = _.sample(this.db.activePlayers);
+    this.removeAnswer(this.db.czar);
   }
+  this.removeAnswer(playerName);
 };
 
 Game.prototype.show_answers = function (res, force) {
@@ -174,7 +176,6 @@ Game.prototype.show_answers = function (res, force) {
   answers = this.db.answers;
   answers_n = answers.length;
   submitters_n = this.db.activePlayers.length - 1;
-  status = answers_n + "/" + submitters_n;
   if (force || (answers_n >= submitters_n)) {
     responseString = "White card submissions so far (" + status + "):";
     for (i = j = 0, ref = answers_n; j < ref; i = j += 1) {
@@ -184,11 +185,11 @@ Game.prototype.show_answers = function (res, force) {
     if (force) {
       return this.robot.messageRoom(this.sender(res), responseString);
     } else {
-      return res.send(responseString);
+      return res.send(responseString + "\n\n*Time to choose, " + this.db.czar + "!*");
     }
   } else {
-    return res.reply("NOPE, not everyone has responded yet! (" + status + ")");
-  }
+    return res.reply("NOPE, not everyone has responded yet!");
+  } 
 };
 
 Game.prototype.generate_phrase = function (blackCard, whiteCards) {
@@ -219,8 +220,9 @@ Game.prototype.generate_phrase = function (blackCard, whiteCards) {
 };
 
 
-Game.prototype.submit_answer = function (playerName, handIndices) {
+Game.prototype.submit_answer = function (res, handIndices) {
   var card, cards, i, j, k, len, len1, playerHand;
+  var playerName = this.sender(res);
   playerHand = this.db.hands[playerName];
   cards = [];
   for (j = 0, len = handIndices.length; j < len; j++) {
@@ -232,7 +234,10 @@ Game.prototype.submit_answer = function (playerName, handIndices) {
     i = playerHand.indexOf(card);
     playerHand.splice(i, 1);
   }
-  return this.db.answers.push([playerName, cards]);
+  this.db.answers.push([playerName, cards]);
+  if (this.db.answers.length === (this.db.activePlayers.length - 1)) {
+    this.show_answers(res);
+  }
 };
 
 
@@ -270,7 +275,7 @@ Game.prototype.submit = function(res) {
         }
       }
     }
-    this.submit_answer(this.sender(res), nums);
+    this.submit_answer(res, nums);
     return res.reply("Submission accepted.");
   }
 };
@@ -288,10 +293,13 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     cards = this.db.answers[answerIndex][1];
     winningPhrase = this.generate_phrase(this.db.blackCard, cards);
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
-    if (this.db.scores[winner] == null) {
-      this.db.scores[winner] = 1;
-    } else {
-      this.db.scores[winner] = this.db.scores[winner] + 1;
+    this.db.scores[winner] = Number(this.db.scores[winner]) + 1;
+
+    if (this.db.scores[winner] === 7) {
+      // announce winner, then reset
+      res.send("\n\nTA DA! You've all lost to " + winner + "! I hope you're ashamed.\n\n")
+      this.reset(res, { czar: winner });
+      return;
     }
   }
   this.db.answers = [];
@@ -310,6 +318,22 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     }
   }
   return responseString + "\n\nNext round:\n" + this.game_state_string();
+};
+
+Game.prototype.reset = function (res, db) {
+  var modes = this.db.modes;
+  var players = this.db.activePlayers;
+  this.db = _.cloneDeep(defaultData);
+  this.db.modes = modes;
+  this.db.activePlayers = players;
+  this.db = _.defaults(db, this.db);
+  if (!this.db.czar) {
+    this.db.czar = _.sample(this.db.activePlayers.length);
+  }
+  this.shuffle();
+  this.fix_hands();
+  res.send('Starting a new game... now!');
+  res.send(this.game_state_string());
 };
 
 Game.prototype.who_hasnt_answered = function () {
