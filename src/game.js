@@ -147,7 +147,7 @@ Game.prototype.add_player = function (playerName) {
 };
 
 Game.prototype.removeAnswer = function (player) {
-  _.remove(answers, function (answer) {
+  _.remove(this.db.answers, function (answer) {
     return answer[0] === player;
   });
 };
