@@ -326,6 +326,7 @@ Game.prototype.reset = function (state, retainPlayers) {
   var players = this.db.activePlayers;
   this.db = _.cloneDeep(defaultData);
   this.db.modes = modes;
+  state = state || {};
   this.db = _.defaults(state, this.db);
 
   this.shuffle();
