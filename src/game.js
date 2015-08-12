@@ -327,7 +327,7 @@ Game.prototype.reset = function (state, retainPlayers) {
   this.db = _.cloneDeep(defaultData);
   this.db.modes = modes;
   state = state || {};
-  this.db = _.defaults(state, this.db);
+  this.db = _.defaultsDeep(state, this.db);
 
   this.shuffle();
 
@@ -342,9 +342,9 @@ Game.prototype.reset = function (state, retainPlayers) {
       this.db.czar = _.sample(this.db.activePlayers.length);
     }
   }
-  
+
   this.message('Starting a new game... now!');
-  this.message(this.game_state_string());
+  // this.message(this.game_state_string());
 };
 
 Game.prototype.who_hasnt_answered = function () {

@@ -57,6 +57,7 @@ module.exports = (robot) ->
 
   robot.hear /^cah reset-game$/i, (res) ->
     game.reset()
+    res.send('\n\n===\nGAME RESET SUCCESSFULLY\n===\n\n')
 
   robot.hearspond /cah help$/i, (res) ->
     res.send helpSummary
