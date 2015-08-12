@@ -295,12 +295,12 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
     this.db.scores[winner] = Number(this.db.scores[winner]) + 1;
 
-    // if (this.db.scores[winner] >= 1) {
-    //   // announce winner, then reset
-    //   this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
-    //   this.reset({ czar: winner });
-    //   return;
-    // }
+    if (this.db.scores[winner] >= 1) {
+      // announce winner, then reset
+      this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
+      this.reset({ czar: winner }, true);
+      return;
+    }
   }
   this.db.answers = [];
   this.fix_hands();
@@ -320,23 +320,26 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
   return responseString + "\n\nNext round:\n" + this.game_state_string();
 };
 
-Game.prototype.reset = function (db) {
+Game.prototype.reset = function (state, retainPlayers) {
   var self = this;
   var modes = this.db.modes;
   var players = this.db.activePlayers;
   this.db = _.cloneDeep(defaultData);
   this.db.modes = modes;
-  this.db = _.defaults(db, this.db);
+  this.db = _.defaults(state, this.db);
 
   this.shuffle();
-  _.forEach(players, function (p) {
-    self.add_player(p);
-  });
 
-  this.db.czar = db.czar || this.db.czar;
+  if (retainPlayers) {
+    _.forEach(players, function (p) {
+      self.add_player(p);
+    });
 
-  if (!this.db.czar) {
-    this.db.czar = _.sample(this.db.activePlayers.length);
+    this.db.czar = state.czar || this.db.czar;
+
+    if (!this.db.czar) {
+      this.db.czar = _.sample(this.db.activePlayers.length);
+    }
   }
   
   this.message('Starting a new game... now!');
