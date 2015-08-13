@@ -174,7 +174,7 @@ Game.prototype.remove_player = function (playerName) {
 
 Game.prototype.show_answers = function (res, force) {
   var answers, answers_n, cards, i, j, ref, responseString, status, submitters_n;
-  answers = _.shuffle(this.db.answers);
+  answers = this.db.answers;
   answers_n = answers.length;
   submitters_n = this.db.activePlayers.length - 1;
   if (force || (answers_n >= submitters_n)) {
@@ -236,6 +236,7 @@ Game.prototype.submit_answer = function (res, handIndices) {
     playerHand.splice(i, 1);
   }
   this.db.answers.push([playerName, cards]);
+  this.db.answers = _.shuffle(this.db.answers);
   if (this.db.answers.length === (this.db.activePlayers.length - 1)) {
     this.show_answers(res);
   }
