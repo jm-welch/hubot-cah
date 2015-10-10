@@ -75,7 +75,7 @@ module.exports = (robot) ->
 
   robot.hear /^cah toggle mode (.*)$/i, (res) ->
     mode = res.match[1].trim()
-    res.send mode + ' mode has been set to ' + game.toggleMode(mode)
+    res.send mode + ' mode has been set to ' + game.toggle_mode(mode)
 
   robot.hear /^cah kick( [^\s]+)$/i, (res) ->
     name = res.match[1].trim()
@@ -101,19 +101,10 @@ module.exports = (robot) ->
       res.send responseString
 
   robot.hearspond /cah leaders$/i, (res) ->
-    scoreTuples = []
-    for name,score of game.db.scores
-      scoreTuples.push([name,score])
-    scoreTuples.sort (a,b) ->
-      a = a[1]
-      b = b[1]
-      return a < b ? -1 : (a > b ? 1 : 0)
+    responseString = "*CAH Leaderboard*"
+    for player in game.get_leaderboard()
+      responseString += "\n#{player.name}: #{player.score}"
 
-    responseString = "CAH Leaders:"
-    for i in [0...5] by 1
-      if i >= scoreTuples.length
-        break
-      responseString += "\n#{scoreTuples[i][1]} #{scoreTuples[i][0]}"
     res.send responseString
 
   robot.hearspond /cah score$/i, (res) ->

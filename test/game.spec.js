@@ -45,17 +45,17 @@ describe('game logic', function () {
   });
 
   it('should shuffle the white and black cards', function () {
-    var game = new Game({}), white, black;
+    var game = new Game({});
     game.shuffle();
-    white = game.db.decks.white[0];
-    black = game.db.decks.black[0];
+    var whites = game.db.decks.white.slice(0, 5);
+    var blacks = game.db.decks.black.slice(0, 5);
     game.shuffle();
-    expect(white).to.not.equal(game.db.decks.white[0]);
-    expect(black).to.not.equal(game.db.decks.black[0]);
+    expect(whites).to.not.deep.equal(game.db.decks.white.slice(0, 5));
+    expect(blacks).to.not.deep.equal(game.db.decks.black.slice(0, 5));
   });
 
   it('should deal cards to all players without repeating', function () {
-    var game = new Game({}), all;
+    var game = new Game({}), all, expectedN, startCount;
     game.init({ cah: {
       activePlayers: ['player1', 'player2', 'player3', 'player4', 'player5'],
       hands: {
@@ -67,11 +67,34 @@ describe('game logic', function () {
       }
     }});
     game.shuffle();
+
+    expectedN = game.db.activePlayers.length * game.db.handsize;
+    startCount = game.db.decks.white.length;
+
     game.fix_hands();
     all = _.reduce(game.db.hands, function (a, b) {
       return a.concat(b);
     }, []);
-    expect(_.uniq(all).length).to.equal(game.db.activePlayers.length * game.db.handsize);
+    expect(_.uniq(all).length).to.equal(expectedN);
+    expect(game.db.decks.white.length).to.equal(startCount - expectedN);
+  });
+
+  it('should return a list of scores in numerical descending order', function () {
+    var game = new Game({});
+    game.init({ cah: {
+      scores: {
+        "max": 5,
+        "jason": 22,
+        "cole": 3,
+        "old nancy": 0 
+      }
+    }});
+    expect(game.get_leaderboard()).to.deep.equal([
+      { name: 'jason', score: 22 },
+      { name: 'max', score: 5 },
+      { name: 'cole', score: 3 },
+      { name: 'old nancy', score: 0 }
+    ]);
   });
 
 });

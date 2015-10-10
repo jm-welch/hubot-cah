@@ -37,7 +37,7 @@ Game.prototype.init = function (data) {
   this.shuffle();
 };
 
-Game.prototype.toggleMode = function (mode) {
+Game.prototype.toggle_mode = function (mode) {
   this.db.modes = this.db.modes || {};
   this.db.modes[mode] = !this.db.modes[mode];
   return this.db.modes[mode];
@@ -67,7 +67,7 @@ Game.prototype.random_white_card = function () {
   return this.db.decks.white[_.random(0, this.db.decks.white.length)];
 };
 
-Game.prototype.checkMode = function (mode) {
+Game.prototype.check_mode = function (mode) {
   return this.db.modes && this.db.modes[mode];
 };
 
@@ -86,7 +86,7 @@ Game.prototype.add_urban_dictionary_card = function () {
 Game.prototype.deal_card = function (color) {
   var next;
 
-  if (color === 'white' && this.checkMode('urban-dictionary')) {
+  if (color === 'white' && this.check_mode('urban-dictionary')) {
     var shouldPick = (_.random(0, this.db.handsize) <= 1);
     if (shouldPick && Array.isArray(this.db.decks.ud)) {
       this.add_urban_dictionary_card();
@@ -371,6 +371,13 @@ Game.prototype.game_state_string = function () {
 
     return message;
   }
+};
+
+Game.prototype.get_leaderboard = function () {
+  var scores = _.map(this.db.scores, function (score, player) {
+    return { name: player, score: score };
+  });
+  return _.sortByOrder(scores, ['score'], ['desc']);
 };
 
 Game.prototype.sender = function (res) {
