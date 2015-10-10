@@ -101,7 +101,7 @@ Game.prototype.deal_card = function (color) {
     if (shouldPick && Array.isArray(this.db.decks.ud)) {
       this.add_urban_dictionary_card();
       next = this.db.decks.ud.shift();
-      next && this.debug('Deal ' + color '! (UD)');
+      next && this.debug('Deal ' + color + '! (UD)');
     }
   }
 
