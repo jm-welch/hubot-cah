@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var urbanDictionary = require('./urbanDictionary');
+var deck = require('./deck');
 
 var defaultData = {
   scores: {},
@@ -24,25 +25,30 @@ var hasProp = {}.hasOwnProperty;
 var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 var blackBlank = "_____";
-var blackCards = require('./blackcards.coffee');
-var whiteCards = require('./whitecards.coffee');
 
 Game.prototype.init = function (data) {
   this.initialized = true;
+
   data.cah = data.cah || _.cloneDeep(defaultData);
   this.db = _.defaults(data.cah, defaultData);
 
   this.db.decks.ud = [];
+  this.db.modes = {
+    base: true
+  };
 
-  this.shuffle();
+  this.resetDecks();
 };
 
 Game.prototype.toggle_mode = function (mode) {
   this.db.modes = this.db.modes || {};
   this.db.modes[mode] = !this.db.modes[mode];
   this.debug(mode + ' mode toggled ' + this.db.modes[mode]);
+  deck.setModes(this.db.modes);
+
+  this.resetDecks(); // adds/removes cards for toggled mode
   return this.db.modes[mode];
-}
+};
 
 Game.prototype.message = function (message) {
   if (this.db.room) {
@@ -55,15 +61,14 @@ Game.prototype.debug = function (message) {
   this.robot.messageRoom('#debug', message);
 };
 
-Game.prototype.shuffle = function (color) {
+Game.prototype.resetDecks = function (color) {
   this.db.decks = this.db.decks || {};
+
   if (!color || color === 'black') {
-    this.db.decks.black = _.shuffle(blackCards);
-    this.debug('Shuffled black cards, deck count: ' + this.db.decks.black.length);
+    this.db.decks.black = deck.blackCards();
   }
   if (!color || color === 'white') {
-    this.db.decks.white = _.shuffle(whiteCards);
-    this.debug('Shuffled white cards, deck count: ' + this.db.decks.white.length);
+    this.db.decks.white = deck.whiteCards();
   }
 };
 
@@ -113,7 +118,7 @@ Game.prototype.deal_card = function (color) {
   if (!next) {
     this.debug("Out of " + color + " cards, re-shuffling the deck");
     this.message("Out of " + color + " cards, re-shuffling the deck");
-    this.shuffle(color);
+    this.resetDecks(color);
     return this.deal_card(color);
   }
 
@@ -348,7 +353,7 @@ Game.prototype.reset = function (state, retainPlayers) {
   state = state || {};
   this.db = _.defaultsDeep(state, this.db);
 
-  this.shuffle();
+  this.resetDecks();
 
   if (retainPlayers) {
     _.forEach(players, function (p) {

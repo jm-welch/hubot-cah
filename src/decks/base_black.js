@@ -1,8 +1,10 @@
-#  Black Cards Against Humanity cards to be drawn by the Card Czar
-#
-#  Blanks should be indicated by a sequence of exactly five underscores.
-#  The number of blanks correspond to the number of white cards to be played.
-#  If no blanks, one white card is expected per answer.
+//  Black Cards Against Humanity cards to be drawn by the Card Czar
+//
+//  Blanks should be indicated by a sequence of exactly five underscores.
+//  The number of blanks correspond to the number of white cards to be played.
+//  If no blanks, one white card is expected per answer.
+
+// contains first three expansion packs
 
 module.exports = [
   "(Pick 3) I went from _____ to _____, all thanks to _____.",
@@ -15,7 +17,7 @@ module.exports = [
   "(Pick 2) I never truly understood _____ until I encountered _____.",
   "(Pick 2) I spent my whole life working toward _____, only to have it ruined by _____.",
   "(Pick 2) If God didn't want us to enjoy _____, he wouldn't have given us _____.",
-  "(Pick 2) In M. Night Shamalan's new movie, Bruce Willis discovers that _____ had really been _____ all along."
+  "(Pick 2) In M. Night Shamalan's new movie, Bruce Willis discovers that _____ had really been _____ all along.",
   "(Pick 2) In a pinch, _____ can be a suitable substitute for _____.",
   "(Pick 2) In a world ravaged by _____, our only solace is _____.",
   "(Pick 2) Lifetime presents _____, the story of _____.",
@@ -170,5 +172,5 @@ module.exports = [
   "_____. It's a trap!",
   "_____. That's how I want to die.",
   "_____: good to the last drop.",
-  "_____? There's an app for that.",
+  "_____? There's an app for that."
 ]
