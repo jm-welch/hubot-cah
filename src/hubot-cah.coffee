@@ -55,6 +55,9 @@ module.exports = (robot) ->
         response = response[m];
     res.send JSON.stringify(response, null, 2)
 
+  robot.hearspond /cah debug (.*)/i, (res) ->
+    game.debug(res.match[1])
+    
   robot.hear /^cah reset-game$/i, (res) ->
     game.reset()
     res.send('\n\n===\nGAME RESET SUCCESSFULLY\n===\n\n')

@@ -43,6 +43,7 @@ Game.prototype.init = function (data) {
 Game.prototype.toggle_mode = function (mode) {
   this.db.modes = this.db.modes || {};
   this.db.modes[mode] = !this.db.modes[mode];
+  this.debug(mode + ' mode toggled ' + this.db.modes[mode]);
   deck.setModes(this.db.modes);
 
   this.resetDecks(); // adds/removes cards for toggled mode
@@ -53,6 +54,11 @@ Game.prototype.message = function (message) {
   if (this.db.room) {
     this.robot.messageRoom('#' + this.db.room, message);
   }
+};
+
+Game.prototype.debug = function (message) {
+  if (!this.check_mode('debug')) return;
+  this.robot.messageRoom('#debug', message);
 };
 
 Game.prototype.resetDecks = function (color) {
@@ -67,10 +73,12 @@ Game.prototype.resetDecks = function (color) {
 };
 
 Game.prototype.random_black_card = function () {
+  this.debug('Unexpected method call: random_black_card');
   return this.db.decks.black[_.random(0, this.db.decks.black.length)];
 };
 
 Game.prototype.random_white_card = function () {
+  this.debug('Unexpected method call: random_white_card');
   return this.db.decks.white[_.random(0, this.db.decks.white.length)];
 };
 
@@ -98,17 +106,24 @@ Game.prototype.deal_card = function (color) {
     if (shouldPick && Array.isArray(this.db.decks.ud)) {
       this.add_urban_dictionary_card();
       next = this.db.decks.ud.shift();
+      next && this.debug('Deal ' + color + '! (UD)');
     }
   }
 
   if (!next) {
     next = this.db.decks[color].shift();
+    next && this.debug('Deal ' + color + '! Remaining: ' + this.db.decks[color].length);
   }
 
   if (!next) {
+    this.debug("Out of " + color + " cards, re-shuffling the deck");
     this.message("Out of " + color + " cards, re-shuffling the deck");
     this.resetDecks(color);
     return this.deal_card(color);
+  }
+
+  if (!next) {
+    this.debug('Something went wrong trying to deal ' + color);
   }
 
   return next;
