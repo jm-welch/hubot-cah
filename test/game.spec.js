@@ -1,9 +1,42 @@
 require('coffee-script');
-var Game = require('../src/game');
 var expect = require('chai').expect;
 var _ = require('lodash');
+var proxyquire = require('proxyquire').noCallThru();
 
 describe('game logic', function () {
+  var deckMock;
+
+
+  beforeEach(function() {
+    deckMock = {
+      setModes: function() {},
+      whiteCards: function() {
+        return [
+          "72 virgins",
+          "8 oz. of sweet Mexican black-tar heroin",
+          "A 55-gallon drum of lube",
+          "A Bop It",
+          "A Burmese tiger pit",
+          "A Christmas stocking full of coleslaw",
+          "A Gypsy curse",
+          "A Hungry-Man Frozen Christmas Dinner for One",
+          "A PowerPoint presentation",
+          "A Super Soaker full of cat pee"
+        ];
+      },
+      blackCards: function() {
+        return [
+          "_____. That's how I want to die.",
+          "_____: good to the last drop.",
+          "_____? There's an app for that."
+        ];
+      }
+    };
+
+    Game = proxyquire('../src/game', {
+      './deck': deckMock
+    });
+  });
 
   it('should get a list of players who haven\'t answered', function () {
     var game = new Game({});
@@ -31,7 +64,7 @@ describe('game logic', function () {
 
   it('should deal all the cards without repeating', function () {
     var game = new Game({}), nWhite, nBlack, card, dealt = [];
-    game.shuffle();
+    game.resetDecks();
     nWhite = game.db.decks.white.length;
     nBlack = game.db.decks.black.length;
 
@@ -44,16 +77,6 @@ describe('game logic', function () {
     expect(game.db.decks.white.length).to.equal(0);
   });
 
-  it('should shuffle the white and black cards', function () {
-    var game = new Game({});
-    game.shuffle();
-    var whites = game.db.decks.white.slice(0, 5);
-    var blacks = game.db.decks.black.slice(0, 5);
-    game.shuffle();
-    expect(whites).to.not.deep.equal(game.db.decks.white.slice(0, 5));
-    expect(blacks).to.not.deep.equal(game.db.decks.black.slice(0, 5));
-  });
-
   it('should deal cards to all players without repeating', function () {
     var game = new Game({}), all, expectedN, startCount;
     game.init({ cah: {
@@ -64,9 +87,9 @@ describe('game logic', function () {
         player3: [],
         player4: [],
         player5: []
-      }
+      },
+      handsize: 2
     }});
-    game.shuffle();
 
     expectedN = game.db.activePlayers.length * game.db.handsize;
     startCount = game.db.decks.white.length;

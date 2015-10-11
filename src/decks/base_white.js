@@ -1,4 +1,5 @@
-#  White Cards Against Humanity cards to be played against Black cards
+// White Cards Against Humanity cards to be played against Black cards
+// contains first three expansion packs
 
 module.exports = [
   "72 virgins",
@@ -189,7 +190,6 @@ module.exports = [
   "Coughing into a vagina",
   "Count Chocula",
   "Crippling debt",
-  "Critical 8",
   "Crying into the pages of Sylvia Plath",
   "Crystal meth",
   "Cuddling",
@@ -340,7 +340,6 @@ module.exports = [
   "Hot people",
   "Hulk Hogan",
   "Hurricane Katrina",
-  "I blame Andy",
   "Immaculate conception",
   "Inappropriate yodeling",
   "Incest",
@@ -443,7 +442,6 @@ module.exports = [
   "Nunchuck moves",
   "Obesity",
   "Object permanence",
-  "Oh hey!",
   "Old-people smell",
   "Ominous background music",
   "One Ring to rule them all",
@@ -696,7 +694,6 @@ module.exports = [
   "Weapons-grade plutonium",
   "Wearing an octopus for a hat",
   "Wearing underwear inside-out to avoid doing laundry",
-  "Webhooookssss",
   "Whatever Kwanzaa is supposed to be about",
   "When you fart and a little bit comes out",
   "Whining like a little bitch",
