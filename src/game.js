@@ -37,6 +37,8 @@ Game.prototype.init = function (data) {
     base: true
   };
 
+  deck.setModes(this.db.modes);
+
   this.resetDecks();
 };
 
