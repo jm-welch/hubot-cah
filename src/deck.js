@@ -33,24 +33,20 @@ module.exports.setModes = function(md) {
 
 module.exports.availableDecks = availableDecks;
 
-module.exports.activeDecks = activeDecks;
-
 /**
  * An array all available decks
  * @returns {Array}
  */
 function availableDecks() {
-  return _.uniq(_.keys(averageWhiteDecks).concat(_.keys(bigBlackDecks)));
-}
+  var allDecks = _.uniq(_.keys(averageWhiteDecks).concat(_.keys(bigBlackDecks)));
+  var partitioned = _.partition(allDecks, function(deck) {
+    return !!modes[deck];
+  });
 
-/**
- * Just the decks with a truthy mode
- * @returns {*}
- */
-function activeDecks() {
-  var activeModes = _.keys(_.pick(modes, function(value) { return !!value}));
-  var allDecks = availableDecks();
-  return _.intersection(activeModes, allDecks);
+  return {
+    active: partitioned[0],
+    inactive: partitioned[1]
+  };
 }
 
 /**
@@ -60,14 +56,15 @@ function activeDecks() {
  * @returns {Array}
  */
 function getActiveCards(deckMap) {
-  var cards = [];
+  var cards = []
+    , decks = availableDecks();
 
-  _.forEach(activeDecks(), function(deck) {
+  _.forEach(decks.active, function(deck) {
     cards = cards.concat(deckMap[deck] || []);
   });
 
   if(cards.length === 0) {
-    cards.push('No decks active! Pick some from: ' + availableDecks().join(', '));
+    cards.push('No decks active! Pick some from: ' + decks.inactive.join(', '));
   }
 
   return _.shuffle(cards);

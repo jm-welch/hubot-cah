@@ -14,8 +14,7 @@ helpSummary += "\ncah answers - List the submitted white cards once all have bee
 helpSummary += "\ncah choose <#> - Choose a winning answer (czar only)"
 helpSummary += "\ncah status - Display summary of current game"
 helpSummary += "\ncah skip - Discard current black card and assign a new Card Czar"
-helpSummary += "\ncah decks - Lists all decks. Decks can be toggled on and off `toggle mode`. "
-helpSummary += "\ncah active decks - Lists all decks currently in play. Decks can be toggled on and off `toggle mode`. "
+helpSummary += "\ncah decks - Lists all active and inactive decks. Decks can be toggled on and off `toggle mode`. "
 
 Game = require('./game')
 deck = require('./deck')
@@ -161,8 +160,5 @@ module.exports = (robot) ->
     res.send game.game_state_string()
 
   robot.hearspond /cah decks$/i, (res) ->
-    res.reply "Available decks: " + deck.availableDecks().join(', ')
-
-  robot.hearspond /cah active decks$/i, (res) ->
-    res.reply "Active decks: " + deck.activeDecks().join(', ')
-
+    decks = deck.availableDecks();
+    res.reply "Active decks: " + decks.active.join(', ') + "\nInactive decks: " + decks.inactive.join(', ')

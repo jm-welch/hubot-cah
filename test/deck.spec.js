@@ -41,16 +41,11 @@ describe('Deck', function() {
     expect(deck.blackCards()).to.have.length(1);
   });
 
-  it('should list all decks', function() {
-    var decks = deck.availableDecks();
-    expect(decks).to.have.length.above(0);
-  });
-
   it('should list available decks', function() {
-    deck.setModes({base: true});
-    var decks = deck.activeDecks();
-    expect(decks).to.have.length(1);
-    expect(decks).to.contain('base');
+    deck.setModes({base: true, cool_kids: false});
+    var decks = deck.availableDecks();
+    expect(decks.active).to.contain('base');
+    expect(decks.inactive).to.contain('cool_kids');
   });
 
 });
