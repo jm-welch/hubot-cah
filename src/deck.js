@@ -31,22 +31,40 @@ module.exports.setModes = function(md) {
   modes = md || {};
 };
 
+module.exports.availableDecks = availableDecks;
+
+/**
+ * An array all available decks
+ * @returns {Array}
+ */
+function availableDecks() {
+  var allDecks = _.uniq(_.keys(averageWhiteDecks).concat(_.keys(bigBlackDecks)));
+  var partitioned = _.partition(allDecks, function(deck) {
+    return !!modes[deck];
+  });
+
+  return {
+    active: partitioned[0],
+    inactive: partitioned[1]
+  };
+}
+
 /**
  * creates an array of all cards for modes that are truthy
  * Ignores modes that don't have a corresponding deck
- * @param modeToDeckMap
+ * @param deckMap
  * @returns {Array}
  */
-function getActiveCards(modeToDeckMap) {
-  var cards = [];
-  var activeModes = _.keys(_.pick(modes, function(value) { return !!value}));
+function getActiveCards(deckMap) {
+  var cards = []
+    , decks = availableDecks();
 
-  _.forEach(activeModes, function(mode) {
-    cards = cards.concat(modeToDeckMap[mode] || []);
+  _.forEach(decks.active, function(deck) {
+    cards = cards.concat(deckMap[deck] || []);
   });
 
   if(cards.length === 0) {
-    cards.push('No decks active! Pick some from: ' + _.keys(averageWhiteDecks).join(', '));
+    cards.push('No decks active! Pick some from: ' + decks.inactive.join(', '));
   }
 
   return _.shuffle(cards);

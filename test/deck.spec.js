@@ -8,7 +8,6 @@ describe('Deck', function() {
     deck = require('../src/deck');
   });
 
-
   it('should have a single entry for empty mode', function() {
     expect(deck.whiteCards()).to.have.length(1);
     expect(deck.blackCards()).to.have.length(1);
@@ -40,6 +39,13 @@ describe('Deck', function() {
     deck.setModes({alaMode:false});
     expect(deck.whiteCards()).to.have.length(1);
     expect(deck.blackCards()).to.have.length(1);
+  });
+
+  it('should list available decks', function() {
+    deck.setModes({base: true, cool_kids: false});
+    var decks = deck.availableDecks();
+    expect(decks.active).to.contain('base');
+    expect(decks.inactive).to.contain('cool_kids');
   });
 
 });
