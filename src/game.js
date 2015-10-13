@@ -33,9 +33,7 @@ Game.prototype.init = function (data) {
   this.db = _.defaults(data.cah, defaultData);
 
   this.db.decks.ud = [];
-  this.db.modes = {
-    base: true
-  };
+  this.db.modes = this.db.modes || {base: true};
 
   deck.setModes(this.db.modes);
 
