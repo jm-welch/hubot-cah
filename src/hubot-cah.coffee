@@ -161,4 +161,4 @@ module.exports = (robot) ->
 
   robot.hearspond /cah decks$/i, (res) ->
     decks = deck.availableDecks();
-    res.reply "Active decks: " + decks.active.join(', ') + "\nInactive decks: " + decks.inactive.join(', ')
+    res.send "Active decks: " + decks.active.join(', ') + "\nInactive decks: " + decks.inactive.join(', ')
