@@ -13,24 +13,24 @@ describe('Deck', function() {
     expect(deck.blackCards()).to.have.length(1);
   });
 
-  it('should load decks based for truthy modes', function() {
-    deck.setModes({base:true});
+  it('should load decks maind for truthy modes', function() {
+    deck.setModes({main:true});
     expect(deck.whiteCards()).to.have.length.above(1);
     expect(deck.blackCards()).to.have.length.above(1);
   });
 
-  it('should load decks based for falsey modes', function() {
-    deck.setModes({base:false});
+  it('should load decks maind for falsey modes', function() {
+    deck.setModes({main:false});
     expect(deck.whiteCards()).to.have.length(1);
     expect(deck.blackCards()).to.have.length(1);
   });
 
   it('should allow updating modes', function() {
-    deck.setModes({base:true});
+    deck.setModes({main:true});
     expect(deck.whiteCards()).to.have.length.above(1);
     expect(deck.blackCards()).to.have.length.above(1);
 
-    deck.setModes({base:false});
+    deck.setModes({main:false});
     expect(deck.whiteCards()).to.have.length(1);
     expect(deck.blackCards()).to.have.length(1);
   });
@@ -42,9 +42,9 @@ describe('Deck', function() {
   });
 
   it('should list available decks', function() {
-    deck.setModes({base: true, cool_kids: false});
+    deck.setModes({main: true, cool_kids: false});
     var decks = deck.availableDecks();
-    expect(decks.active).to.contain('base');
+    expect(decks.active).to.contain('main');
     expect(decks.inactive).to.contain('cool_kids');
   });
 
