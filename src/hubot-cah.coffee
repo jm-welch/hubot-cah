@@ -78,9 +78,9 @@ module.exports = (robot) ->
     game.remove_player(name)
     res.send "#{name} is no longer a CAH player. Their score will be preserved should they decide to play again."
 
-  robot.hear /^cah toggle mode (.*)$/i, (res) ->
-    mode = res.match[1].trim()
-    res.send mode + ' mode has been set to ' + game.toggle_mode(mode)
+  robot.hear /^cah toggle (mode|deck) (.*)$/i, (res) ->
+    mode = res.match[2].trim()
+    res.send mode + ' ' + res.match[1].trim() + ' has been set to ' + game.toggle_mode(mode)
 
   robot.hear /^cah kick( [^\s]+)$/i, (res) ->
     name = res.match[1].trim()
