@@ -1,6 +1,6 @@
 // sourced from https://docs.google.com/spreadsheets/d/1lsy7lIwBe-DWOi2PALZPf5DgXHx9MEvKfRw1GaWQkzg/edit#gid=9
 module.exports =[
-  "An international tribunal has found _____ guilty of _____.",
+  "(Pick 2) An international tribunal has found _____ guilty of _____.",
   "And I would have gotten away with it, too, if it hadn't been for _____!",
   "(Pick 2) Dear Sir or Madam, We regret to inform you that the Office of _____ has denied your request for _____.",
   "He who controls _____ controls the world.",
