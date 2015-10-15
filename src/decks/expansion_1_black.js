@@ -1,0 +1,27 @@
+// sourced from https://docs.google.com/spreadsheets/d/1lsy7lIwBe-DWOi2PALZPf5DgXHx9MEvKfRw1GaWQkzg/edit#gid=9
+module.exports =[
+  "(Pick 2) An international tribunal has found _____ guilty of _____.",
+  "And I would have gotten away with it, too, if it hadn't been for _____!",
+  "(Pick 2) Dear Sir or Madam, We regret to inform you that the Office of _____ has denied your request for _____.",
+  "He who controls _____ controls the world.",
+  "I learned the hard way that you can't cheer up a grieving friend with _____.",
+  "In a pinch, _____ can be a suitable substitute for _____.",
+  "In his new self-produced album, Kanye West raps over the sounds of _____.",
+  "In its new tourism campaign, Detroit proudly proclaims that it has finally eliminated _____.",
+  "In Rome, there are whisperings that the Vatican has a secret room devoted to _____.",
+  "In the distant future, historians will agree that _____ marked the beginning of America's decline.",
+  "(Pick 2) Michael Bay's new three-hour action epic pits _____ against _____.",
+  "My plan for world domination begins with _____.",
+  "Next season on Man vs, Wild, Bear Grylls must survive the depths of the Amazon with only _____ and his wits.",
+  "Science will never explain _____.",
+  "Science will never explain the origin of _____.",
+  "The CIA now interrogates enemy agents by repeatedly subjecting them to _____.",
+  "The secret to a lasting marriage is communication, communication, and _____.",
+  "The socialist governments of Scandinavia have declared that access to _____ is a basic human right.",
+  "This season on Man vs. Wild, Bear Grylls must survive in the depths of the Amazon with only _____ and his wits.",
+  "What brought the orgy to a grinding halt?",
+  "What has been making life difficult at the nudist colony?",
+  "What's the gift that keeps on giving?",
+  "When all else fails, I can always masturbate to _____.",
+  "When I pooped, what came out of my butt?"
+];

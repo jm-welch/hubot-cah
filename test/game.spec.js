@@ -9,8 +9,8 @@ describe('game logic', function () {
 
   beforeEach(function() {
     deckMock = {
-      availableDecks: function() {return ['base'];},
-      activeDecks: function() {return ['base'];},
+      availableDecks: function() {return ['main'];},
+      activeDecks: function() {return ['main'];},
       setModes: function() {},
       whiteCards: function() {
         return [
