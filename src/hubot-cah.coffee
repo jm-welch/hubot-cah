@@ -14,7 +14,8 @@ helpSummary += "\ncah answers - List the submitted white cards once all have bee
 helpSummary += "\ncah choose <#> - Choose a winning answer (czar only)"
 helpSummary += "\ncah status - Display summary of current game"
 helpSummary += "\ncah skip - Discard current black card and assign a new Card Czar"
-helpSummary += "\ncah decks - Lists all active and inactive decks. Decks can be toggled on and off `toggle mode`. "
+helpSummary += "\ncah toggle deck <deck> - Toggles a deck on or off. "
+helpSummary += "\ncah decks - Lists all active and inactive decks. Decks can be toggled on and off `toggle deck`. "
 
 Game = require('./game')
 deck = require('./deck')
@@ -78,9 +79,9 @@ module.exports = (robot) ->
     game.remove_player(name)
     res.send "#{name} is no longer a CAH player. Their score will be preserved should they decide to play again."
 
-  robot.hear /^cah toggle mode (.*)$/i, (res) ->
-    mode = res.match[1].trim()
-    res.send mode + ' mode has been set to ' + game.toggle_mode(mode)
+  robot.hear /^cah toggle (mode|deck) (.*)$/i, (res) ->
+    mode = res.match[2].trim()
+    res.send mode + ' ' + res.match[1].trim() + ' has been set to ' + game.toggle_mode(mode)
 
   robot.hear /^cah kick( [^\s]+)$/i, (res) ->
     name = res.match[1].trim()
