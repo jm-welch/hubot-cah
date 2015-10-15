@@ -14,7 +14,8 @@ helpSummary += "\ncah answers - List the submitted white cards once all have bee
 helpSummary += "\ncah choose <#> - Choose a winning answer (czar only)"
 helpSummary += "\ncah status - Display summary of current game"
 helpSummary += "\ncah skip - Discard current black card and assign a new Card Czar"
-helpSummary += "\ncah decks - Lists all active and inactive decks. Decks can be toggled on and off `toggle mode`. "
+helpSummary += "\ncah toggle deck <deck> - Toggles a deck on or off. "
+helpSummary += "\ncah decks - Lists all active and inactive decks. Decks can be toggled on and off `toggle deck`. "
 
 Game = require('./game')
 deck = require('./deck')
