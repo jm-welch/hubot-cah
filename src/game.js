@@ -167,6 +167,9 @@ Game.prototype.add_player = function (playerName) {
     this.db.czar = playerName;
     return this.db.blackCard = this.deal_card('black');
   }
+
+  this.debug('added player ' + playerName);
+  this.db_dump();
 };
 
 Game.prototype.removeAnswer = function (player) {
