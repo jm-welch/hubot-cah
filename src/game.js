@@ -346,17 +346,18 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
 
 Game.prototype.reset = function (state, retainPlayers) {
   var self = this;
-  var modes = this.db.modes;
-  var players = this.db.activePlayers;
+  var cachedState = _.cloneDeep(this.db);
+  // var modes = this.db.modes;
+  // var players = this.db.activePlayers;
   this.db = _.cloneDeep(defaultData);
-  this.db.modes = modes;
+  this.db.modes = cachedState.modes;
   state = state || {};
   this.db = _.defaultsDeep(state, this.db);
 
   this.resetDecks();
 
   if (retainPlayers) {
-    _.forEach(players, function (p) {
+    _.forEach(cachedState.activePlayers, function (p) {
       self.add_player(p);
     });
 
@@ -367,9 +368,19 @@ Game.prototype.reset = function (state, retainPlayers) {
     }
   }
 
+  // debug print db state minus decks
+  this.db_dump();
+
   this.message('Starting a new game... now!');
-  // this.message(this.game_state_string());
 };
+
+Game.prototype.db_dump = function () {
+  if (this.check_mode('debug')) {
+    var debugState = _.cloneDeep(this.db);
+    delete debugState.decks;
+    this.debug('\n\n===\nDB DUMP\n===\n\n' + JSON.stringify(debugState, null, 2));
+  }
+}
 
 Game.prototype.who_hasnt_answered = function () {
   var self = this;
