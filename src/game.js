@@ -304,7 +304,7 @@ Game.prototype.submit = function(res) {
 };
 
 Game.prototype.czar_choose_winner = function (answerIndex) {
-  var answer, cards, czarIndex, j, len, ref, responseString, winner, winningPhrase;
+  var answer, cards, czarIndex, j, len, ref, responseString = '', winner, winningPhrase;
   if (0 <= answerIndex && answerIndex < this.db.answers.length) {
     responseString = "Current round:";
     ref = this.db.answers;
@@ -317,8 +317,10 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     winningPhrase = this.generate_phrase(this.db.blackCard, cards);
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
     this.db.scores[winner] = Number(this.db.scores[winner]) + 1;
+    
+    return responseString + this.new_round();
   }
-  return this.new_round();
+  return answerIndex + ' is not a valid choice, my friend';
 };
 
 Game.prototype.new_round = function (czar) {
@@ -339,7 +341,7 @@ Game.prototype.new_round = function (czar) {
       this.db.czar = this.db.activePlayers[czarIndex + 1];
     }
   }
-  return responseString + "\n\nNext round:\n" + this.game_state_string();
+  return "\n\nNext round:\n" + this.game_state_string();
 }
 
 Game.prototype.reset_scores = function () {
