@@ -61,20 +61,26 @@ module.exports = (robot) ->
   robot.hearspond /cah debug (.*)/i, (res) ->
     game.debug(res.match[1])
     
-  robot.hear /^cah reset-game$/i, (res) ->
+  robot.hear /^cah reset game$/i, (res) ->
     game.reset()
     res.send('\n\n===\nGAME RESET SUCCESSFULLY\n===\n\n')
 
-  robot.hearspond /cah help$/i, (res) ->
+  robot.hear /^cah reset scores ?$/i, (res) ->
+    res.send game.reset_scores()
+
+  robot.hear /^cah reset scores! ?$/i, (res) ->
+    res.send game.reset_scores() + '\n\n' + game.new_round()
+
+  robot.hearspond /cah help ?$/i, (res) ->
     res.send helpSummary
 
-  robot.hear /^cah join$/i, (res) ->
+  robot.hear /^cah join ?$/i, (res) ->
     game.set_room(res)
     name = game.sender(res)
     game.add_player(name)
     res.reply "You are now an active CAH player."
 
-  robot.hear /^cah leave$/i, (res) ->
+  robot.hear /^cah leave ?$/i, (res) ->
     name = game.sender(res)
     game.remove_player(name)
     res.send "#{name} is no longer a CAH player. Their score will be preserved should they decide to play again."
@@ -83,7 +89,7 @@ module.exports = (robot) ->
     mode = res.match[2].trim()
     res.send mode + ' ' + res.match[1].trim() + ' has been set to ' + game.toggle_mode(mode)
 
-  robot.hear /^cah kick( [^\s]+)$/i, (res) ->
+  robot.hear /^cah kick( [^\s]+) ?$/i, (res) ->
     name = res.match[1].trim()
     if (game.db.activePlayers.indexOf(name) == -1)
       res.reply "#{name} isn't a current player so... this is awkward"
@@ -97,7 +103,7 @@ module.exports = (robot) ->
     else
       res.send "No Card Czar yet, waiting for players."
 
-  robot.hearspond /cah players$/i, (res) ->
+  robot.hearspond /cah players ?$/i, (res) ->
     if game.db.activePlayers.length < 1
       res.send "Waiting for players."
     else
@@ -106,21 +112,21 @@ module.exports = (robot) ->
         responseString += ", #{game.db.activePlayers[i]}"
       res.send responseString
 
-  robot.hearspond /cah leaders$/i, (res) ->
+  robot.hearspond /cah leaders ?$/i, (res) ->
     responseString = "*CAH Leaderboard*"
     for player in game.get_leaderboard()
       responseString += "\n#{player.name}: #{player.score}"
 
     res.send responseString
 
-  robot.hearspond /cah score$/i, (res) ->
+  robot.hearspond /cah score ?$/i, (res) ->
     score = game.db.scores[game.sender(res)]
     if score?
       res.reply score
     else
       res.reply "No CAH score on record."
 
-  robot.hearspond /cah (hand|cards)$/i, (res) ->
+  robot.hearspond /cah (hand|cards) ?$/i, (res) ->
     cards = game.db.hands[game.sender(res)]
     responseString = "Your white CAH cards:"
     if cards?
@@ -130,17 +136,17 @@ module.exports = (robot) ->
     robot.messageRoom game.sender(res), responseString
 
 
-  robot.hear /^cah answers$/i, (res) ->
+  robot.hear /^cah answers ?$/i, (res) ->
     game.show_answers res
 
-  robot.hear /^cah answers!/i, (res) ->
+  robot.hear /^cah answers! ?/i, (res) ->
     if (game.sender(res) != game.db.czar)
       res.reply "Whoa easy only the czar can force out the answers"
       return
     game.show_answers res, 'force, mother fucker'
 
 
-  robot.hear /^cah (choose|pick) (\d+)$/i, (res) ->
+  robot.hear /^cah (choose|pick) (\d+) ?$/i, (res) ->
     if game.sender(res) != game.db.czar
       res.reply "Only the Card Czar may choose a winner."
     else if game.db.answers.length == 0
@@ -155,11 +161,11 @@ module.exports = (robot) ->
   robot.hearspond /cah status ?$/i, (res) ->
     res.send game.game_state_string()
 
-  robot.hear /^cah skip$/i, (res) ->
+  robot.hear /^cah skip ?$/i, (res) ->
     game.db.answers = []
     game.db.blackCard = game.deal_card('black')
     res.send game.game_state_string()
 
-  robot.hearspond /cah decks$/i, (res) ->
+  robot.hearspond /cah decks ?$/i, (res) ->
     decks = deck.availableDecks();
     res.send "Active decks: " + decks.active.join(', ') + "\nInactive decks: " + decks.inactive.join(', ')

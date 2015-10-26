@@ -27,13 +27,14 @@ var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i 
 var blackBlank = "_____";
 
 Game.prototype.init = function (data) {
+  var localDefaults = _.cloneDeep(defaultData);
   this.initialized = true;
 
-  data.cah = data.cah || _.cloneDeep(defaultData);
-  this.db = _.defaults(data.cah, defaultData);
+  data.cah = data.cah || localDefaults;
+  this.db = _.defaults(data.cah, localDefaults);
 
   this.db.decks.ud = [];
-  this.db.modes = this.db.modes || {main: true};
+  this.db.modes = this.db.modes || { main: true };
 
   deck.setModes(this.db.modes);
 
@@ -208,11 +209,7 @@ Game.prototype.show_answers = function (res, force) {
       cards = answers[i][1];
       responseString += "\n" + (i + 1) + ": " + (this.generate_phrase(this.db.blackCard, cards));
     }
-    if (force) {
-      return this.robot.messageRoom(this.sender(res), responseString);
-    } else {
-      return this.message(responseString + "\n\n*Time to choose, " + this.db.czar + "!*");
-    }
+    return this.message(responseString + "\n\n*Time to choose, " + this.db.czar + "!*");
   } else {
     return res.reply("NOPE, not everyone has responded yet!");
   }
@@ -321,18 +318,17 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     winningPhrase = this.generate_phrase(this.db.blackCard, cards);
     responseString += "\n\n" + winner + " earns a point for\n*" + winningPhrase + "*";
     this.db.scores[winner] = Number(this.db.scores[winner]) + 1;
-
-    // if (this.db.scores[winner] >= this.db.playToScore || 7) {
-    //   // announce winner, then reset
-    //   this.message("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\nTA DA! You've all lost to " + winner + "! I hope you're all ashamed! HAHAHAHA!\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉")
-    //   this.reset({ czar: winner }, true);
-    //   return;
-    // }
   }
+  return this.new_round();
+};
+
+Game.prototype.new_round = function (czar) {
   this.db.answers = [];
   this.fix_hands();
   this.db.blackCard = this.deal_card('black');
-  if (this.db.activePlayers.length === 0) {
+  if (czar && _.contains(this.db.activePlayers, czar)) {
+    this.db.czar = czar;
+  } else if (this.db.activePlayers.length === 0) {
     this.db.czar = null;
   } else if (this.db.czar == null) {
     this.db.czar = this.db.activePlayers[0];
@@ -345,18 +341,22 @@ Game.prototype.czar_choose_winner = function (answerIndex) {
     }
   }
   return responseString + "\n\nNext round:\n" + this.game_state_string();
-};
+}
 
-Game.prototype.reset = function (state, retainPlayers) {
+Game.prototype.reset_scores = function () {
+  _.forEach(_.keys(this.db.scores), function (player) {
+    this.db.scores[player] = 0;
+  });
+  return '🔥🔥🔥 SCORES HAVE BEEN RESET 🔥🔥🔥';
+}
+
+Game.prototype.reset = function (preservedState, retainPlayers) {
   var self = this;
   var cachedState = _.cloneDeep(this.db);
-  // var modes = this.db.modes;
-  // var players = this.db.activePlayers;
-  this.db = _.cloneDeep(defaultData);
-  this.db.modes = cachedState.modes;
-  state = state || {};
-  this.db = _.defaultsDeep(state, this.db);
 
+  this.db = _.cloneDeep(defaultData);
+  this.db.modes = _.cloneDeep(cachedState.modes);
+  this.db = _.defaultsDeep(preservedState || {}, this.db);
   this.resetDecks();
 
   if (retainPlayers) {
