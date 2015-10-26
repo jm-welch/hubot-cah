@@ -344,7 +344,8 @@ Game.prototype.new_round = function (czar) {
 
 Game.prototype.reset_scores = function () {
   var self = this;
-  _.forEach(_.keys(this.db.scores), function (player) {
+  this.db.scores = {};
+  _.forEach(this.db.activePlayers, function (player) {
     self.db.scores[player] = 0;
   });
   return '🔥🔥🔥 SCORES HAVE BEEN RESET 🔥🔥🔥';
