@@ -170,7 +170,6 @@ Game.prototype.add_player = function (playerName) {
   }
 
   this.debug('added player ' + playerName);
-  this.db_dump();
 };
 
 Game.prototype.removeAnswer = function (player) {
