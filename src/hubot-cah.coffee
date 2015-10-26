@@ -136,7 +136,7 @@ module.exports = (robot) ->
     if cards?
       for i in [0...cards.length] by 1
         responseString += "\n#{i+1}: #{cards[i]}"
-    responseString += "\n\nCurrent black card: *#{game.db.blackCard}* (czar: *#{game.db.czar}*)"
+    responseString += "\n\nCurrent black card: *#{game.db.blackCard}* (czar: #{game.db.czar})"
     robot.messageRoom game.sender(res), responseString
 
 
