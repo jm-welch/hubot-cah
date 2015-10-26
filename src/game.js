@@ -341,7 +341,7 @@ Game.prototype.new_round = function (czar) {
       this.db.czar = this.db.activePlayers[czarIndex + 1];
     }
   }
-  return "\n\nNext round:\n" + this.game_state_string();
+  return "\n\nNew round:\n" + this.game_state_string();
 }
 
 Game.prototype.reset_scores = function () {
