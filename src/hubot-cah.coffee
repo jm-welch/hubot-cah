@@ -128,9 +128,9 @@ module.exports = (robot) ->
 
   robot.hearspond /cah (hand|cards) ?$/i, (res) ->
     responseString = ''
-    if (game.sender(res) === game.db.czar) {
+    if (game.sender(res) == game.db.czar)
       responseString += "*Psst... you're the current czar!*\n\n"
-    }
+
     cards = game.db.hands[game.sender(res)]
     responseString += "Your white CAH cards:"
     if cards?

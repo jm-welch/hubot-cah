@@ -107,7 +107,7 @@ describe('hubot-cah // cool kids fork', function () {
   });
 
   it('should print help text command list', function () {
-    robotMock.respond.withArgs(/cah help$/i).yields(resMock);
+    robotMock.respond.withArgs(/cah help ?$/i).yields(resMock);
     cah(robotMock);
     robotMock.brain.emit('loaded');
     expect(resMock.send).to.have.been.calledWithMatch(/^_hubot-cah commands:_/);
