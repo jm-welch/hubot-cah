@@ -127,12 +127,17 @@ module.exports = (robot) ->
       res.reply "No CAH score on record."
 
   robot.hearspond /cah (hand|cards) ?$/i, (res) ->
+    responseString = ''
+    if (game.sender(res) === game.db.czar) {
+      responseString += "*Psst... you're the current czar!*\n\n"
+    }
     cards = game.db.hands[game.sender(res)]
-    responseString = "Your white CAH cards:"
+    responseString += "Your white CAH cards:"
     if cards?
       for i in [0...cards.length] by 1
         responseString += "\n#{i+1}: #{cards[i]}"
     responseString += "\nCurrent black card: *#{game.db.blackCard}*"
+    responseString += "\nCurrent czar: #{game.db.czar}"
     robot.messageRoom game.sender(res), responseString
 
 
