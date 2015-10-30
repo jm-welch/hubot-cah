@@ -122,4 +122,30 @@ describe('game logic', function () {
     ]);
   });
 
+  describe('duplicate submission check', function () {
+
+    var data;
+
+    beforeEach(function () {
+      data = { cah: { answers: [
+        ['joe', ['what a dumb design']],
+        ['mary', ['why arrays']],
+        ['jorb', ['why not objects unngggh']]
+      ]}};
+    });
+
+    it('should return false if person has not submitted yet', function() {
+      var game = new Game();
+      game.init(data);
+      expect(game.hasAlreadySubmitted('bowie')).to.be.false;
+    });
+
+    it('should return true if person has already submitted', function() {
+      var game = new Game();
+      game.init(data);
+      expect(game.hasAlreadySubmitted('jorb')).to.be.true;
+    });
+
+  });
+
 });

@@ -263,6 +263,12 @@ Game.prototype.submit_answer = function (res, handIndices) {
   }
 };
 
+Game.prototype.hasAlreadySubmitted = function (submitter) {
+  var submitted = _.map(this.db.answers, function (answer) {
+    return answer[0];
+  });
+  return _.contains(submitted, submitter);
+};
 
 Game.prototype.submit = function(res) {
   var expectedCount, i, j, k, l, m, numString, nums, ref, ref1, ref2, ref3;
@@ -272,7 +278,8 @@ Game.prototype.submit = function(res) {
     res.reply("You are currently the Card Czar!");
     return;
   }
-  if (_.contains(_.keys(this.db.answers), player)) {
+
+  if (this.hasAlreadySubmitted(player)) {
     res.reply("You have already submitted cards for this round.");
     return;
   }
@@ -287,7 +294,7 @@ Game.prototype.submit = function(res) {
   } else {
     for (i = k = 0, ref = nums.length; k < ref; i = k += 1) {
       nums[i] = parseInt(nums[i], 10) - 1;
-      if (nums[i] >= this.db.hands[this.sender(res)].length) {
+      if (nums[i] >= this.db.hands[player].length) {
         res.reply(nums[i] + " is not a valid card number.");
         return;
       }
