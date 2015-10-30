@@ -266,11 +266,13 @@ Game.prototype.submit_answer = function (res, handIndices) {
 
 Game.prototype.submit = function(res) {
   var expectedCount, i, j, k, l, m, numString, nums, ref, ref1, ref2, ref3;
-  if (this.sender(res) === this.db.czar) {
+  var player = this.sender(res);
+
+  if (player === this.db.czar) {
     res.reply("You are currently the Card Czar!");
     return;
   }
-  if (this.db.hands[this.sender(res)].length < this.db.handsize) {
+  if (_.contains(_.keys(this.db.answers), player)) {
     res.reply("You have already submitted cards for this round.");
     return;
   }
