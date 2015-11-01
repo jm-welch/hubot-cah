@@ -98,8 +98,6 @@ describe('game logic', function () {
     expectedN = game.db.activePlayers.length * game.db.handsize;
     startCount = game.db.decks.white.length;
 
-    console.log(game.db.decks);
-
     game.fix_hands();
     all = _.reduce(game.db.hands, function (a, b) {
       return a.concat(b);
