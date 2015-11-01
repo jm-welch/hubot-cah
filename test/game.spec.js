@@ -93,8 +93,12 @@ describe('game logic', function () {
       handsize: 2
     }});
 
+    game.resetDecks(); // populate decks
+
     expectedN = game.db.activePlayers.length * game.db.handsize;
     startCount = game.db.decks.white.length;
+
+    console.log(game.db.decks);
 
     game.fix_hands();
     all = _.reduce(game.db.hands, function (a, b) {
@@ -120,6 +124,34 @@ describe('game logic', function () {
       { name: 'cole', score: 3 },
       { name: 'old nancy', score: 0 }
     ]);
+  });
+
+  it('should use decks passed in to init', function() {
+    var game = new Game({});
+    game.init({
+      cah: {
+        decks: {
+          ud: ['urban dict'],
+          white: ['Carnies'],
+          black: ['When I pooped, what came out of my butt?']
+        }
+      }
+    });
+
+    expect(game.db.decks.ud[0]).to.equal('urban dict');
+    expect(game.db.decks.white[0]).to.equal('Carnies');
+    expect(game.db.decks.black[0]).to.equal('When I pooped, what came out of my butt?');
+  });
+
+  it('should use initialize decks to empty arrays', function() {
+    var game = new Game({});
+    game.init({
+      cah: {}
+    });
+
+    expect(game.db.decks.ud).to.deep.equal([]);
+    expect(game.db.decks.white).to.deep.equal([]);
+    expect(game.db.decks.black).to.deep.equal([]);
   });
 
   describe('duplicate submission check', function () {
