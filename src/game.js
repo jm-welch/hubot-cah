@@ -9,7 +9,11 @@ var defaultData = {
   czar: null,
   hands: {},
   modes: {},
-  decks: {},
+  decks: {
+    ud: [],
+    white: [],
+    black: []
+  },
   answers: [],
   handsize: 7,
   playToScore: 7
@@ -32,13 +36,9 @@ Game.prototype.init = function (data) {
 
   data.cah = data.cah || localDefaults;
   this.db = _.defaults(data.cah, localDefaults);
-
-  this.db.decks.ud = [];
   this.db.modes = this.db.modes || { main: true };
 
   deck.setModes(this.db.modes);
-
-  this.resetDecks();
 };
 
 Game.prototype.toggle_mode = function (mode) {
@@ -351,7 +351,7 @@ Game.prototype.new_round = function (czar) {
     }
   }
   return "\n\nNew round:\n" + this.game_state_string();
-}
+};
 
 Game.prototype.reset_scores = function () {
   var self = this;
@@ -360,7 +360,7 @@ Game.prototype.reset_scores = function () {
     self.db.scores[player] = 0;
   });
   return '🔥🔥🔥 SCORES HAVE BEEN RESET 🔥🔥🔥';
-}
+};
 
 Game.prototype.reset = function (preservedState, retainPlayers) {
   var self = this;
@@ -369,7 +369,6 @@ Game.prototype.reset = function (preservedState, retainPlayers) {
   this.db = _.cloneDeep(defaultData);
   this.db.modes = _.cloneDeep(cachedState.modes);
   this.db = _.defaultsDeep(preservedState || {}, this.db);
-  this.resetDecks();
 
   if (retainPlayers) {
     _.forEach(cachedState.activePlayers, function (p) {
