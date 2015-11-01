@@ -37,8 +37,6 @@ Game.prototype.init = function (data) {
   this.db.modes = this.db.modes || { main: true };
 
   deck.setModes(this.db.modes);
-
-  this.resetDecks();
 };
 
 Game.prototype.toggle_mode = function (mode) {
