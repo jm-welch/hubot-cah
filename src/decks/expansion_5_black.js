@@ -9,7 +9,7 @@ module.exports = [
   "Having the worst day EVER. #_____",
   "Heed my voice, mortals! I am the god of _____ , and I will not tolerate _____!",
   "Help me doctor, I've got _____ in my butt!",
-  "Here at the Academy for Gifted Children, we all students to explore _____ at their own pace.",
+  "Here at the Academy for Gifted Children, we allow students to explore _____ at their own pace.",
   "Hi MTV! My name is Kendra, I live in Malibu, I'm into _____, and I love to have a good time.",
   "Hi, this is Jim from accounting. We noticed a $1,200 charge labeled '_____.' Can you explain?",
   "I don't mean to brag, but they call me the Micheal Jordan of _____.",
