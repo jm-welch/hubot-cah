@@ -89,7 +89,7 @@ module.exports = [
   "What's my anti-drug?",
   "What's the most emo?",
   "What's the new fad diet?",
-  "What's the next superhero/sidekick duo?",
+  "(Pick 2) What's the next superhero/sidekick duo? _____ and _____",
   "_____. That was so metal.",
   "A recent laboratory study shows that undergraduates have 50% less sex after being exposed to _____.",
   "After four platinum albums and three Grammys, it's time to get back to my roots, to what inspired me to make music in the first place: _____.",
