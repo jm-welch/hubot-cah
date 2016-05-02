@@ -9,7 +9,7 @@ module.exports = [
   "Dear Leader Kim Jong-un, our village praises your infinite wisdom with a humble offering of _____.",
   "Do not fuck with me! I am literally _____ right now.",
   "(Pick 2) Every step towards _____ gets me a little bit closer to _____.",
-  "(Pick 2) Forget everything you know about _____, because now e've supercharged it with _____!",
+  "(Pick 2) Forget everything you know about _____, because now we've supercharged it with _____!",
   "(Pick 2) Honey, I have a new role-play I want to try tonight! You can be _____, and I'll be _____.",
   "How am I compensating for my tiny penis?",
   "(Pick 2) I am become _____, destroyer of _____!",
